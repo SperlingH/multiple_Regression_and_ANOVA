@@ -60,6 +60,33 @@ summary(multiple.regression)
 # no exposure to second hand smoke: (scd.hnd.smk(C)) D = 0
 # f(x) = c + m*x + C*D
 
+# Chapter 2
+# Examples
+
+# independent (predictor) variable
+# dependent (response) variable
+# for the population:
+# line of means:
+# µ_(y|x) = beta_(0) + beta_(1)*X
+# stadard deviation:
+# sigma_(y|x)
+# --> # µ_(y|x) = beta_(0) + beta_(1)*X + epsilon
+# epsilon describes the variablility in the population; "deviation"/ "error" from the line of means
+
+# data for Fig. 2-1 is not provided; data for Fig. 2-3:
+table.2.1 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/marswh.dat"), header = F, sep="")
+table.2.1 <- data.frame(weight = table.2.1$V1,
+                        height = table.2.1$V2)
+write.csv(table.2.1, file = "Table_2.1.csv",
+          row.names = F)
+# plotting data
+# Fig. 1-1 plotting weight against height from Table 1-1
+ggplot(table.2.1, aes(x=height, y=weight)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+summary(lm(formula = weight ~ height, data = table.2.1))
+
 
 
 
