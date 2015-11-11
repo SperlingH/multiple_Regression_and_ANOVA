@@ -1,6 +1,6 @@
 ## R code for all examples and problems in "Primer of Applied Regression and Analysis of Variance" from Stanton A. Glantz & Bryan K. Slinker; 1. edition; 1990
 
-setwd("~/Dokumente/Computer/git/Primer_of_Applied_Regression_and_Analysis_of_Variance/")
+setwd("~/Dokumente/Computer/git/multiple_Regression_and_ANOVA/")
 
 library("ggplot2")
 
@@ -62,17 +62,6 @@ summary(multiple.regression)
 
 # Chapter 2
 # Examples
-
-# independent (predictor) variable
-# dependent (response) variable
-# for the population:
-# line of means:
-# µ_(y|x) = beta_(0) + beta_(1)*X
-# stadard deviation:
-# sigma_(y|x)
-# --> # µ_(y|x) = beta_(0) + beta_(1)*X + epsilon
-# epsilon describes the variablility in the population; "deviation"/ "error" from the line of means
-
 # data for Fig. 2-1 is not provided; data for Fig. 2-3:
 table.2.1 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/marswh.dat"), header = F, sep="")
 table.2.1 <- data.frame(weight = table.2.1$V1,
@@ -86,7 +75,20 @@ ggplot(table.2.1, aes(x=height, y=weight)) +
   geom_smooth(method=lm,   # Add linear regression line
               se=FALSE)    # Don't add shaded confidence region
 summary(lm(formula = weight ~ height, data = table.2.1))
+# Intercept: b_0
+#   "(Intercept)"
+# slope: b_1
+#   "height"
+# standard error of the estimate: s_(y|x)
+#   "Residual standard error"
+# y = b_0 + b_1*x + s_(y|x)
+# used to compute confidence intervals and test hypotheses
+# standard error of the slope: column "Std.Error" in row "height"
+# standard error of the intercept: column "Std.Error" in row "(Intercept)"
+# t-statistics in the columns "t value", corresponding P-value in "Pr(>|t|)" and significance stars
 
+# determine confidence intervals:
+confint(lm(formula = weight ~ height, data = table.2.1))
 
 
 
