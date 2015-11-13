@@ -137,7 +137,57 @@ results.2.1$sigma
 #   F statistic for overall goodness of fit: 47.71
 results.2.1$fstatistic[[1]]
 
-#####
-#input.data <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/problems_1ed/d-01.dat"), header = F, sep="")
+# 2.2
+table.D.1 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/problems_1ed/d-01.dat"), header = F, sep="")
+table.D.1 <- data.frame(Sedation.score = table.D.1$V1,
+                        Cortisol = table.D.1$V2)
+write.csv(table.D.1, file = "Table_D.1.csv",
+          row.names = F)
 
+ggplot(table.D.1, aes(x=Cortisol,y=Sedation.score)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
 
+results.2.2 <- summary(lm(formula = Sedation.score ~ Cortisol, data = table.D.1))
+#   correlation coefficient (sqrt(R-squared)):
+sqrt(results.2.2$r.squared)
+#   standard error of the estimate (Residual standard error):
+results.2.2$sigma
+# p.value F-statistic:
+1 - pf(results.2.2$fstatistic[[1]], results.2.2$fstatistic[[2]], results.2.2$fstatistic[[3]])
+
+# 2.3
+table.D.2 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/problems_1ed/d-02.dat"), header = F, sep="")
+table.D.2 <- data.frame(Breast.Cancer = table.D.2$V1,
+                        Lung.Cancer = table.D.2$V2,
+                        Animal.Fat = table.D.2$V3)
+write.csv(table.D.2, file = "Table_D.2.csv",
+          row.names = F)
+
+ggplot(table.D.2, aes(x=Lung.Cancer, y=Breast.Cancer)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+
+results.2.3 <- summary(lm(formula = Breast.Cancer ~ Lung.Cancer, data = table.D.2))
+results.2.3
+
+# 2.4 
+table.D.3 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/problems_1ed/d-03.dat"), header = F, sep="")
+table.D.3 <- data.frame(CFU = table.D.3$V1,
+                        time.a.MIC = table.D.3$V2,
+                        Dose = table.D.3$V3)
+write.csv(table.D.3, file = "Table_D.3.csv",
+          row.names = F)
+
+D.3.subset <- subset(table.D.3, Dose == 0)
+
+ggplot(D.3.subset, aes(x=time.a.MIC, y=CFU)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=T)    # add shaded confidence region
+
+results.2.4 <- summary(lm(formula = CFU ~ time.a.MIC, data = D.3.subset))
+results.2.4
+confint(lm(formula = CFU ~ time.a.MIC, data = D.3.subset))
