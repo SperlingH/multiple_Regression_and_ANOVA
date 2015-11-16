@@ -181,6 +181,7 @@ table.D.3 <- data.frame(CFU = table.D.3$V1,
 write.csv(table.D.3, file = "Table_D.3.csv",
           row.names = F)
 
+# analyse only the datasets with Dose == 0
 D.3.subset <- subset(table.D.3, Dose == 0)
 
 ggplot(D.3.subset, aes(x=time.a.MIC, y=CFU)) +
@@ -191,3 +192,41 @@ ggplot(D.3.subset, aes(x=time.a.MIC, y=CFU)) +
 results.2.4 <- summary(lm(formula = CFU ~ time.a.MIC, data = D.3.subset))
 results.2.4
 confint(lm(formula = CFU ~ time.a.MIC, data = D.3.subset))
+
+
+# 2.5
+table.D.4 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/problems_1ed/d-04.dat"), header = F, sep="")
+table.D.4 <- data.frame(RV.resistance = table.D.4$V1,
+                        plasma.renin = table.D.4$V2,
+                        group.code = table.D.4$V3)
+write.csv(table.D.4, file = "Table_D.4.csv",
+          row.names = F)
+
+# A mean values; significant relationship between RV.resistance and plasma.renin?
+require(plyr)
+table.D.4.A <- ddply(table.D.4, .(group.code), summarize,
+      mean.RV.resistance = round(mean(RV.resistance), 2),
+      sd.RV.resistance = round(sd(RV.resistance), 2),
+      mean.plasma.renin = round(mean(plasma.renin), 2),
+      sd.plasma.renin = round(sd(plasma.renin), 2),
+      n = length(group.code))
+
+
+ggplot(table.D.4.A, aes(x=mean.plasma.renin, y=mean.RV.resistance)) +
+  geom_point(shape=1) + 
+  # Errorbar
+  geom_errorbar(aes(
+    ymin=table.D.4.A$mean.RV.resistance - table.D.4.A$sd.RV.resistance, 
+    ymax=table.D.4.A$mean.RV.resistance + table.D.4.A$sd.RV.resistance,
+   # xmin=table.D.4.A$mean.plasma.renin - table.D.4.A$sd.plasma.renin, 
+    #xmax=table.D.4.A$mean.plasma.renin + table.D.4.A$sd.plasma.renin),
+    width=.2)) +
+  geom_errorbarh(aes(
+       xmin=table.D.4.A$mean.plasma.renin - table.D.4.A$sd.plasma.renin, 
+       xmax=table.D.4.A$mean.plasma.renin + table.D.4.A$sd.plasma.renin),
+       width=.2) +
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+
+results.2.4A <- summary(lm(formula = mean.RV.resistance ~ mean.plasma.renin , data = table.D.4.A))
+results.2.4A
