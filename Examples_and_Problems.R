@@ -226,7 +226,20 @@ ggplot(table.D.4.A, aes(x=mean.plasma.renin, y=mean.RV.resistance)) +
        xmax=table.D.4.A$mean.plasma.renin + table.D.4.A$sd.plasma.renin),
        width=.2) +
   geom_smooth(method=lm,   # Add linear regression line
-              se=FALSE)    # Don't add shaded confidence region
+              se=FALSE, # Don't add shaded confidence region
+              fullrange=TRUE)    # extend line
 
 results.2.4A <- summary(lm(formula = mean.RV.resistance ~ mean.plasma.renin , data = table.D.4.A))
 results.2.4A
+
+
+# 2.6
+## failed as server is not responding
+table.D.5 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/problems_1ed/d-05.dat"), header = F, sep="")
+table.D.5 <- data.frame(U.Ca = table.D.5$V1,
+                        D.Ca = table.D.5$V2,
+                        D.p = table.D.5$V3,
+                        U.Na = table.D.5$V4,
+                        G.fr = table.D.5$V5)
+write.csv(table.D.5, file = "Table_D.5.csv",
+          row.names = F)
