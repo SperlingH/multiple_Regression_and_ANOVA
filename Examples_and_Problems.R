@@ -202,7 +202,7 @@ table.D.4 <- data.frame(RV.resistance = table.D.4$V1,
 write.csv(table.D.4, file = "Table_D.4.csv",
           row.names = F)
 
-# A mean values; significant relationship between RV.resistance and plasma.renin?
+# 2.5.A mean values; significant relationship between RV.resistance and plasma.renin?
 require(plyr)
 table.D.4.A <- ddply(table.D.4, .(group.code), summarize,
       mean.RV.resistance = round(mean(RV.resistance), 2),
@@ -231,6 +231,17 @@ ggplot(table.D.4.A, aes(x=mean.plasma.renin, y=mean.RV.resistance)) +
 
 results.2.4A <- summary(lm(formula = mean.RV.resistance ~ mean.plasma.renin , data = table.D.4.A))
 results.2.4A
+
+# 2.5.B
+# relationship: changes in renal resistance and renin
+table.D.4 <- read.csv(file = "Table_D.4.csv")
+ggplot(table.D.4, aes(x=plasma.renin, y=RV.resistance)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=F)    # add shaded confidence region
+summary(lm(formula = RV.resistance ~ plasma.renin, data = table.D.4))
+
+# 2.5.C
 
 
 # 2.6
