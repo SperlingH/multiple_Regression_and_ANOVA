@@ -229,8 +229,8 @@ ggplot(table.D.4.A, aes(x=mean.plasma.renin, y=mean.RV.resistance)) +
               se=FALSE, # Don't add shaded confidence region
               fullrange=TRUE)    # extend line
 
-results.2.4A <- summary(lm(formula = mean.RV.resistance ~ mean.plasma.renin , data = table.D.4.A))
-results.2.4A
+results.2.5A <- summary(lm(formula = mean.RV.resistance ~ mean.plasma.renin , data = table.D.4.A))
+results.2.5A
 
 # 2.5.B
 # relationship: changes in renal resistance and renin
@@ -239,18 +239,51 @@ ggplot(table.D.4, aes(x=plasma.renin, y=RV.resistance)) +
   geom_point(shape=1) + 
   geom_smooth(method=lm,   # Add linear regression line
               se=F)    # add shaded confidence region
-summary(lm(formula = RV.resistance ~ plasma.renin, data = table.D.4))
+results.2.5B <- summary(lm(formula = RV.resistance ~ plasma.renin, data = table.D.4))
+results.2.5B
 
 # 2.5.C
+# compare
+results.2.5A
+results.2.5B
 
+# 2.5.D
+# do NOT compute a regression line for the mean values
+# you ignore the variablity of the data points
 
 # 2.6
-## failed as server is not responding
 table.D.5 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/problems_1ed/d-05.dat"), header = F, sep="")
 table.D.5 <- data.frame(U.Ca = table.D.5$V1,
                         D.Ca = table.D.5$V2,
-                        D.p = table.D.5$V3,
+                        G.fr= table.D.5$V3,
                         U.Na = table.D.5$V4,
-                        G.fr = table.D.5$V5)
+                        D.p = table.D.5$V5)
 write.csv(table.D.5, file = "Table_D.5.csv",
           row.names = F)
+
+ggplot(table.D.5, aes(x = D.Ca, y = U.Ca)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=F)    # add shaded confidence region
+results.2.6.D.Ca <- summary(lm(formula = D.Ca ~ U.Ca, data = table.D.5))
+results.2.6.D.Ca$r.squared;
+# p.value F-statistic:
+1 - pf(results.2.6.D.Ca$fstatistic[[1]], results.2.6.D.Ca$fstatistic[[2]], results.2.6.D.Ca$fstatistic[[3]])
+
+results.2.6.G.fr <- summary(lm(formula = G.fr ~ U.Ca, data = table.D.5))
+results.2.6.G.fr$r.squared;
+# p.value F-statistic:
+1 - pf(results.2.6.G.fr$fstatistic[[1]], results.2.6.G.fr$fstatistic[[2]], results.2.6.G.fr$fstatistic[[3]])
+
+results.2.6.U.Na <- summary(lm(formula = U.Na ~ U.Ca, data = table.D.5))
+results.2.6.U.Na$r.squared;
+# p.value F-statistic:
+1 - pf(results.2.6.U.Na$fstatistic[[1]], results.2.6.U.Na$fstatistic[[2]], results.2.6.U.Na$fstatistic[[3]])
+
+results.2.6.D.p <- summary(lm(formula = D.p ~ U.Ca, data = table.D.5))
+results.2.6.D.p$r.squared;
+# p.value F-statistic:
+1 - pf(results.2.6.D.p$fstatistic[[1]], results.2.6.D.p$fstatistic[[2]], results.2.6.D.p$fstatistic[[3]])
+
+# 2.7
+
