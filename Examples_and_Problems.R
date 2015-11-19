@@ -286,4 +286,16 @@ results.2.6.D.p$r.squared;
 1 - pf(results.2.6.D.p$fstatistic[[1]], results.2.6.D.p$fstatistic[[2]], results.2.6.D.p$fstatistic[[3]])
 
 # 2.7
+table.D.6 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/problems_1ed/d-06.dat"), header = F, sep="")
+table.D.6 <- data.frame(type.F = table.D.6$V1,
+                        T.1 = table.D.6$V2,
+                        T.2= table.D.6$V3)
+write.csv(table.D.6, file = "Table_D.6.csv",
+          row.names = F)
 
+ggplot(table.D.6, aes(x = T.1, y = type.F)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=F)    # add shaded confidence region
+results.2.7 <- summary(lm(formula = type.F ~ T.1 , data = table.D.6))
+results.2.7
