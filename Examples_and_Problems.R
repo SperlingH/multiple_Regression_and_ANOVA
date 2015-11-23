@@ -299,3 +299,41 @@ ggplot(table.D.6, aes(x = T.1, y = type.F)) +
               se=F)    # add shaded confidence region
 results.2.7 <- summary(lm(formula = type.F ~ T.1 , data = table.D.6))
 results.2.7
+
+## To Do
+# function for to get certain values from summary(lm())
+#		- p.Value of F-statistik
+#		- sqrt(R^2)
+
+## Chapter 3
+# Fig 3-1
+library(latticeExtra)
+
+cloud(y~x+z, d, panel.3d.cloud=panel.3dbars, col.facet='grey', 
+      xbase=0.4, ybase=0.4, scales=list(arrows=FALSE, col=1), 
+      par.settings = list(axis.line = list(col = "transparent")))
+
+data.3.1 <- read.csv("Table_1.1.csv")
+multiple.regression <- lm(formula = weight ~ height + water.consumption, data = data.3.1)
+multiple.regression 
+summary(multiple.regression)
+
+library(latticeExtra)
+cloud(weight ~ height + as.factor(water.consumption), data.3.1, panel.3d.cloud=panel.3dbars, col.facet='grey', 
+      xbase=0.4, ybase=0.4, scales=list(arrows=FALSE, col=1), 
+      par.settings = list(axis.line = list(col = "transparent")))
+
+# Fig 3-2
+table.1.1 <- read.csv("Table_1.1.csv")
+multiple.regression <- lm(formula = weight ~ height + water.consumption, data = table.1.1)
+multiple.regression 
+summary(multiple.regression)
+# getting the p-value of the F-statistic:
+f = summary(multiple.regression)$fstatistic
+pf(f[1],f[2],f[3],lower.tail=F)
+# getting residual mean square ( = square of the standard error of the estimate)
+s.y.x <- (summary(multiple.regression)$sigma)^2
+s.y.x
+# determine confidence intervals:
+confint(lm(formula = weight ~ height + water.consumption, data = table.1.1))
+
