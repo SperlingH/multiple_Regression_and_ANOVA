@@ -337,3 +337,22 @@ s.y.x
 # determine confidence intervals:
 confint(lm(formula = weight ~ height + water.consumption, data = table.1.1))
 
+## getting the incremental sum of squares:
+#anova(lm(formula = weight ~ height + water.consumption, data = table.1.1))
+# used to test wether adding independent variables helps to predict the dependent variable
+# F = (mean square associated with adding x2 (x1 is already in the equation)) / (mean square residual for equation containing x1 and x2)
+test.3.2 <- anova(lm(formula = weight ~ height + water.consumption, data = table.1.1))
+#test whether water.consumption adds information after taking into account height
+F.statistic.3.2 <-  test.3.2$`Mean Sq`[[2]]/test.3.2$`Mean Sq`[[3]]
+F.statistic.3.2 
+#denominator degree of freedom:
+test.3.2$Df[[2]]
+#denominator degree of freedom:
+test.3.2$Df[[3]]
+## ! the order in the formula matters if the independent variables are correlated! formula = weight ~ height + water.consumption OR formula = weight ~ water.consumption + height 
+# p.value F-statistic:
+# 1 - pf(F-value, nominator degree of freedom, denominator degree of freedom)
+p.value.F.statistic.3.2 <- 1 - pf(F.statistic.3.2 , test.3.2$Df[[2]], test.3.2$Df[[2]])
+p.value.F.statistic.3.2
+
+
