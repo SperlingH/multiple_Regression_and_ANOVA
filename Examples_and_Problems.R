@@ -37,7 +37,7 @@ summary(multiple.regression)
 # f(x) = c1 + m*x + c2*C
 
 ####
-# Example for Dummy varialbes (D)
+# Example for Dummy variables (D)
 table.1.2 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/marssmok.dat"), header = F, sep="")
 table.1.2 <- data.frame(weight = table.1.2$V1,
                         height = table.1.2$V2,
@@ -355,4 +355,7 @@ test.3.2$Df[[3]]
 p.value.F.statistic.3.2 <- 1 - pf(F.statistic.3.2 , test.3.2$Df[[2]], test.3.2$Df[[2]])
 p.value.F.statistic.3.2
 
-
+# Fig 3-7
+table.1.2 <- read.csv("Table_1.2.csv")
+table.1.2.m.reg <- lm(formula = weight ~ height + scd.hnd.smk, data = table.1.2)
+summary(table.1.2.m.reg)
