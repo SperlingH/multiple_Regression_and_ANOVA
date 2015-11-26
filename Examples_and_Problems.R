@@ -359,3 +359,56 @@ p.value.F.statistic.3.2
 table.1.2 <- read.csv("Table_1.2.csv")
 table.1.2.m.reg <- lm(formula = weight ~ height + scd.hnd.smk, data = table.1.2)
 summary(table.1.2.m.reg)
+
+
+
+
+
+# Fig 3-9 and Fig. 3-10
+table.C.2 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/endotoxn.dat"), header = F, sep="")
+table.C.2 <- data.frame(P = table.C.2$V1,
+                        A = table.C.2$V2,
+                        E = table.C.2$V3)
+write.csv(table.C.2, file = "Table_C.2.csv",
+          row.names = F)
+
+# Fig. 1-2 plotting weight against height from Table 1-1 with water_consumption as factor
+ggplot(table.C.2, aes(x=A, y=P, color=as.factor(E))) +
+  geom_point(shape=1)+ 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE,    # Don't add shaded confidence region
+              fullrange=TRUE) # Extend regression lines
+C.2.m.reg <- lm(formula = P ~ A + E, data = table.C.2)
+C.2.m.reg 
+summary(C.2.m.reg )
+
+
+# Fig. 3-11
+table.C.3 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/leucine.dat"), header = F, sep="")
+table.C.3 <- data.frame(log.L = table.C.3$V1,
+                        log.W = table.C.3$V2,
+                        A = table.C.3$V3)
+write.csv(table.C.3, file = "Table_C.3.csv",
+          row.names = F)
+
+# plotting with a simple linear regression 
+ggplot(table.C.3, aes(x = log.W, y = log.L)) +
+  geom_point(shape=1)+ 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE,    # Don't add shaded confidence region
+              fullrange=TRUE) # Extend regression lines
+
+C.3.reg <- lm(formula = log.L ~ log.W, data = table.C.3)
+C.3.reg 
+summary(C.3.reg)
+
+ggplot(table.C.3, aes(x = log.W, y = log.L, color = as.factor(A) )) +
+  geom_point(shape=1)+ 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE,    # Don't add shaded confidence region
+              fullrange=TRUE) # Extend regression lines
+
+C.3.m.reg <- lm(formula = log.L ~ log.W + A, data = table.C.3)
+C.3.m.reg 
+summary(C.3.m.reg )
+
