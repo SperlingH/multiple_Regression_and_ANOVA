@@ -412,3 +412,25 @@ C.3.m.reg <- lm(formula = log.L ~ log.W + A, data = table.C.3)
 C.3.m.reg 
 summary(C.3.m.reg )
 
+
+# Fig. 3-13
+
+table.C.4 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/diabetes.dat"), header = F, sep="")
+table.C.4 <- data.frame(H = table.C.4$V1,
+                        B = table.C.4$V2,
+                        D = table.C.4$V3,
+                        S = table.C.4$V4,
+                        A = table.C.4$V5,
+                        W = table.C.4$V6,
+                        T = table.C.4$V7,
+                        C = table.C.4$V8,
+                        G = table.C.4$V9)
+write.csv(table.C.4, file = "Table_C.4.csv",
+          row.names = F)
+
+C.4.mreg <- lm(formula = H ~ B + D + S + A + W + T + C + G, data = table.C.4)
+summary(C.4.mreg)
+
+# determine confidence intervals:
+confint(lm(formula = H ~ B + D + S + A + W + T + C + G, data = table.C.4))
+
