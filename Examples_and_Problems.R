@@ -434,3 +434,15 @@ summary(C.4.mreg)
 # determine confidence intervals:
 confint(lm(formula = H ~ B + D + S + A + W + T + C + G, data = table.C.4))
 
+# Fig. 3-15
+table.C.5 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/babybird.dat"), header = F, sep="")
+table.C.5 <- data.frame(V = table.C.5$V1,
+                        O = table.C.5$V2,
+                        C = table.C.5$V3)
+write.csv(table.C.5, file = "Table_C.5.csv",
+          row.names = F)
+
+C.5.mreg <- lm(formula = V ~ O + C , data = table.C.5)
+summary(C.5.mreg)
+# 31.1 % increase in ventilation with each 1 percent increase in conc(CO2)
+
