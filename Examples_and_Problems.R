@@ -104,17 +104,17 @@ summary(lm(formula = weight ~ height, data = table.2.1))
 confint(lm(formula = weight ~ height, data = table.2.1))
 
 ## Heat exchange in gray seals
-table.C.2 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/seals.dat"), header = F, sep="")
-table.C.2 <- data.frame(C.b = table.C.2$V1,
-                        degree.C = table.C.2$V2)
-write.csv(table.C.2, file = "Table_C.2.csv",
+table.C.1 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/seals.dat"), header = F, sep="")
+table.C.1 <- data.frame(C.b = table.C.1$V1,
+                        degree.C = table.C.1$V2)
+write.csv(table.C.1, file = "Table_C.1.csv",
           row.names = F)
 
-ggplot(table.C.2, aes(x=degree.C, y=C.b)) +
+ggplot(table.C.1, aes(x=degree.C, y=C.b)) +
   geom_point(shape=1) + 
   geom_smooth(method=lm,   # Add linear regression line
               se=FALSE)    # Don't add shaded confidence region
-summary(lm(formula = C.b ~ degree.C, data = table.C.2))
+summary(lm(formula = C.b ~ degree.C, data = table.C.1))
 # linear fit should not be used if you examine the datapoints more closely
 # examine the plots of raw data!
 
@@ -446,3 +446,30 @@ C.5.mreg <- lm(formula = V ~ O + C , data = table.C.5)
 summary(C.5.mreg)
 # 31.1 % increase in ventilation with each 1 percent increase in conc(CO2)
 
+# Fig 3-16
+# Polynomal regression
+table.C.1.preg  <- read.csv("Table_C.1.csv")
+# # defining new variable: degree.C ^ 2
+# table.C.1.preg$degree.C.2 <- table.C.1$degree.C^2  
+# C.1.preg <- lm(formula = C.b ~ degree.C + degree.C.2, data = table.C.1.preg)
+# summary(C.1.preg)
+# better: define polynomal function within lm():
+C.1.preg <- lm(formula = C.b ~ degree.C + I(degree.C^2), data = table.C.1.preg)
+summary(C.1.preg)
+
+# plotting polynomal function with custom fit
+fit <- lm(C.b ~ degree.C + I(degree.C^2), data = table.C.1.preg)
+
+prd <- data.frame(degree.C = table.C.1.preg$degree.C)
+err <- predict(fit, newdata = prd, se.fit = TRUE)
+prd$fit <- err$fit
+prd$uci <- err$fit + 1.96 * err$se.fit
+prd$lci <- err$fit - 1.96 * err$se.fit
+
+ggplot(prd, aes(x = degree.C, y = fit)) +
+  theme_bw() +
+  geom_line() +
+  geom_smooth(aes(ymin = lci, ymax = uci), stat = "identity") +
+  geom_point(data =  table.C.1.preg, aes(x = degree.C, y = C.b))
+## FIXME: Plot fit with:
+# + stat_function(fun= C.b ~ degree.C + I(degree.C^2))
