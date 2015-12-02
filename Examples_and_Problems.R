@@ -1,7 +1,6 @@
 ## R code for all examples and problems in "Primer of Applied Regression and Analysis of Variance" from Stanton A. Glantz & Bryan K. Slinker; 1. edition; 1990
 
 setwd("~/Dokumente/Computer/git/multiple_Regression_and_ANOVA/")
-
 library("ggplot2")
 
 # Chapter 1
@@ -457,19 +456,13 @@ table.C.1.preg  <- read.csv("Table_C.1.csv")
 C.1.preg <- lm(formula = C.b ~ degree.C + I(degree.C^2), data = table.C.1.preg)
 summary(C.1.preg)
 
-# plotting polynomal function with custom fit
-fit <- lm(C.b ~ degree.C + I(degree.C^2), data = table.C.1.preg)
+# fitting with polynomial function
+fit.func <- function(x, b0, b1, b2)(b0  + b1*x + b2*x^2)
+arguments <- list(b0 = C.1.preg$coefficients[[1]], 
+                  b1 = C.1.preg$coefficients[[2]], 
+                  b2 = C.1.preg$coefficients[[3]])
 
-prd <- data.frame(degree.C = table.C.1.preg$degree.C)
-err <- predict(fit, newdata = prd, se.fit = TRUE)
-prd$fit <- err$fit
-prd$uci <- err$fit + 1.96 * err$se.fit
-prd$lci <- err$fit - 1.96 * err$se.fit
+ggplot(table.C.1.preg, aes(x = degree.C, y = C.b)) +
+  geom_point(data =  table.C.1.preg, aes(x = degree.C, y = C.b)) +
+  stat_function(fun = fit.func, args = arguments)
 
-ggplot(prd, aes(x = degree.C, y = fit)) +
-  theme_bw() +
-  geom_line() +
-  geom_smooth(aes(ymin = lci, ymax = uci), stat = "identity") +
-  geom_point(data =  table.C.1.preg, aes(x = degree.C, y = C.b))
-## FIXME: Plot fit with:
-# + stat_function(fun= C.b ~ degree.C + I(degree.C^2))
