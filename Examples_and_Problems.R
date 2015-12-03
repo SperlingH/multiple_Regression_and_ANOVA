@@ -448,15 +448,11 @@ summary(C.5.mreg)
 # Fig 3-16
 # Polynomal regression
 table.C.1.preg  <- read.csv("Table_C.1.csv")
-# # defining new variable: degree.C ^ 2
-# table.C.1.preg$degree.C.2 <- table.C.1$degree.C^2  
-# C.1.preg <- lm(formula = C.b ~ degree.C + degree.C.2, data = table.C.1.preg)
-# summary(C.1.preg)
-# better: define polynomal function within lm():
+# define polynomal function [y = b0  + b1*x + b2*x^2] within lm():
 C.1.preg <- lm(formula = C.b ~ degree.C + I(degree.C^2), data = table.C.1.preg)
 summary(C.1.preg)
 
-# fitting with polynomial function
+# plotting with polynomial function fit
 fit.func <- function(x, b0, b1, b2)(b0  + b1*x + b2*x^2)
 arguments <- list(b0 = C.1.preg$coefficients[[1]], 
                   b1 = C.1.preg$coefficients[[2]], 
@@ -464,5 +460,45 @@ arguments <- list(b0 = C.1.preg$coefficients[[1]],
 
 ggplot(table.C.1.preg, aes(x = degree.C, y = C.b)) +
   geom_point(data =  table.C.1.preg, aes(x = degree.C, y = C.b)) +
-  stat_function(fun = fit.func, args = arguments)
+  stat_function(fun = fit.func, args = arguments) # plot function with corresponding parameters
+
+
+# other nonlinear Regressions
+# 1. convert nonlinear regression equation into a multiple linear regression equation
+#   z = b0 + b1*x + b2*sin(x) + b3 * (x^3 + ln(x)) + b4*e^y ==>
+#   x1 = x; x2 = sin(x); x3 = x^3 + ln(x); x4 = e^y ==>
+#   z = b0 + b1*x1 + b2*x2 + b3*x3 + b4*x4
+# 2. transform independent variable
+#   y = a*e^(bx)
+#   ln(y) = ln(a) + bx  ==> y' = ln(y), a = ln(a) ==>
+#   y' = a' + bx
+# PROBLEM:
+# implicit assumpitons
+# e.g.: log-transformation: weight of deviations of small values is increased
+
+# INTERACTIONS BETWEEN INDEPENDENT VARIABLES
+# Fig. 3-18
+# interaction terms:
+#   y = b0 + b1*x1 + b2*x2 + b12*x1*x2 = b0 + b1*x1 + b2*x2 + b12*x12
+# if b12 is significantly different to 0 => significant interaction between independent variables
+#   y = b0 + b1*x1 + (b2 + b12*x1)*x2
+# sensitivity of y to changes in x2 depends on x1
+
+table.C.6 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/saltbact.dat"), header = F, sep="")
+table.C.6 <- data.frame(T.H2O = table.C.6$V1,
+                        time = table.C.6$V2,
+                        NaCl = table.C.6$V3)
+write.csv(table.C.6, file = "Table_C.6.csv",
+          row.names = F)
+
+C.6.mreg <- lm(formula = T.H2O ~ time + NaCl + I(time*NaCl), data = table.C.6)
+summary(C.6.mreg)
+C.6.mreg.no.IA <- lm(formula = T.H2O ~ time + NaCl, data = table.C.6)
+summary(C.6.mreg.no.IA)
+
+ggplot(table.C.6, aes(x=time , y=T.H2O, color=as.factor(NaCl))) +
+  geom_point(shape=1)+ 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE,    # Don't add shaded confidence region
+              fullrange=TRUE) # Extend regression lines
 
