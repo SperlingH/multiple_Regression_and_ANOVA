@@ -502,3 +502,23 @@ ggplot(table.C.6, aes(x=time , y=T.H2O, color=as.factor(NaCl))) +
               se=FALSE,    # Don't add shaded confidence region
               fullrange=TRUE) # Extend regression lines
 
+
+# Fig 3-22
+table.C.7 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/muscle.dat"), header = F, sep="")
+table.C.7 <- data.frame(delta.F = table.C.7$V1,
+                        L = table.C.7$V2,
+                        F = table.C.7$V3)
+write.csv(table.C.7, file = "Table_C.7.csv",
+          row.names = F)
+# non-linear model and interaction between variables:
+C.7.mreg <- lm(formula = delta.F ~ L + I(L^2) + I(L*F), data = table.C.7)
+summary(C.7.mreg)
+# L <=> delta L; I(L^2) <=> delta L squared; I(L*F) <=> delta L * F [quantifies how the relationship changes in response to changes in developed force F]
+
+ggplot(table.C.7, aes(x=L , y=delta.F, color=as.factor(F))) +
+  geom_point(shape=1)+ 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE,    # Don't add shaded confidence region
+              fullrange=TRUE) # Extend regression lines
+
+
