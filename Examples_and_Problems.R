@@ -521,4 +521,57 @@ ggplot(table.C.7, aes(x=L , y=delta.F, color=as.factor(F))) +
               se=FALSE,    # Don't add shaded confidence region
               fullrange=TRUE) # Extend regression lines
 
+##
+# P-3.1
+# formula = weight ~ height + scd.hnd.smk  + heigth*scd.hnd.smk 
+# solve with scd.hnd.smk = 1 and scd.hnd.smk = 0
+
+# P-3.2
+table.1.2 <- read.csv("Table_1.2.csv")
+table.1.2.m.reg <- lm(formula = weight ~ height + scd.hnd.smk, data = table.1.2)
+summary(table.1.2.m.reg)
+
+ggplot(table.1.2, aes(x=height , y=weight, color=as.factor(scd.hnd.smk))) +
+  geom_point(shape=1)+ 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE,    # Don't add shaded confidence region
+              fullrange=TRUE) # Extend regression lines
+
+# here the 2D representation was chosen instead
+# the slope of the regression plane of scd.hnd.smk is a boolean variable
+# ==> there are no intermediate values
+# but you can see the significance of differences between the two conditions, the parallel shift of the regression line
+
+# P-3.3
+table.1.1.mod <- read.csv("Table_1.1.csv")
+table.1.1.mod$water.consumption <- c(2,4,6,10,8,12,18,14,16,20,22,24)
+table.1.1.mod.mreg <- lm(formula = weight ~ height + water.consumption, data = table.1.1.mod)
+summary(table.1.1.mod.mreg)
+## Errata from book:
+#Problem 3.3
+#The answer (p. 888) is incorrect.
+#The incorrect answer prints the regression equation as 
+## W = -15.9 + 0.759*H - 0.252*W
+#whereas the correct regression equation is as computet!
+
+# P-3-4
+# "ROOT MSE" = 0.3087879
+
+# P-3-5
+table.D.7 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/problems_1ed/d-07.dat"), header = F, sep="")
+table.D.7 <- data.frame(year = table.D.7$V1,
+                        Adv.Rev = table.D.7$V2,
+                        Smk.Rel.CSM = table.D.7$V3,
+                        Smk.Rel.ApY = table.D.7$V4)
+write.csv(table.D.7, file = "Table_D.7.csv",
+          row.names = F)
+
+# non-linear model and interaction between variables:
+D.7.mreg <- lm(formula =  Smk.Rel.ApY ~ year + Adv.Rev  + Smk.Rel.CSM, data = table.D.7)
+summary(D.7.mreg)
+# L <=> delta L; I(L^2) <=> deSmk.Rel.ApYlta L squared; I(L*F) <=> delta L * F [quantifies how the relationship changes in response to changes in developed force F]
+
+
+
+
 
