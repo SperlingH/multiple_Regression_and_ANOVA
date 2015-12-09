@@ -571,7 +571,14 @@ D.7.mreg <- lm(formula =  Smk.Rel.ApY ~ year + Adv.Rev  + Smk.Rel.CSM, data = ta
 summary(D.7.mreg)
 # L <=> delta L; I(L^2) <=> deSmk.Rel.ApYlta L squared; I(L*F) <=> delta L * F [quantifies how the relationship changes in response to changes in developed force F]
 
+#P-3-6
+table.C.5 <- read.csv("Table_C.5.csv")
+C.5.mreg <- lm(formula = V ~ O + C , data = table.C.5)
+results.C.5.mreg <- summary(C.5.mreg)
 
-
-
-
+# R²; indep. variables account for only 27% of total variation observed in V:
+results.C.5.mreg$r.squared
+#   F statistic for overall goodness of fit; regression equation provides a better prediction of the obersvations than the mean value of V
+results.C.5.mreg$fstatistic[[1]]
+# high uncertainty for values of dep. variable for combinations fo indep. variables; (157%)
+results.C.5.mreg$sigma
