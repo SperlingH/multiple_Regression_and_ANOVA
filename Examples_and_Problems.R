@@ -621,3 +621,13 @@ ggplot(table.D.8.Sato, aes(x=N.mean, y=P.mean, color=as.factor(D.group) )) +
 
 D.8.Sato.lm <- summary(lm(formula = P.mean ~ N.mean + D.group , data = table.D.8.Sato))
 D.8.Sato.lm 
+
+table.D.8.Sato.D0 <- subset(table.D.8.Sato, D.group == 0)
+D.8.Sato.lm.D0 <- summary(lm(formula = P.mean ~ N.mean, data = table.D.8.Sato.D0))
+table.D.8.Sato.D1 <- subset(table.D.8.Sato, D.group == 1)
+D.8.Sato.lm.D1 <- summary(lm(formula = P.mean ~ N.mean, data = table.D.8.Sato.D1))
+
+# Intersection of the two regression lines with D.group = 0 and 1
+# 131.2 + 0.03049x = 110.4 + 0.07013x
+# switch from stimulant -> blocker:
+#  524.7225 pg/mL
