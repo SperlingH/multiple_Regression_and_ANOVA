@@ -571,7 +571,7 @@ D.7.mreg <- lm(formula =  Smk.Rel.ApY ~ year + Adv.Rev  + Smk.Rel.CSM, data = ta
 summary(D.7.mreg)
 # L <=> delta L; I(L^2) <=> deSmk.Rel.ApYlta L squared; I(L*F) <=> delta L * F [quantifies how the relationship changes in response to changes in developed force F]
 
-#P-3-6
+# P-3-6
 table.C.5 <- read.csv("Table_C.5.csv")
 C.5.mreg <- lm(formula = V ~ O + C , data = table.C.5)
 results.C.5.mreg <- summary(C.5.mreg)
@@ -582,3 +582,42 @@ results.C.5.mreg$r.squared
 results.C.5.mreg$fstatistic[[1]]
 # high uncertainty for values of dep. variable for combinations fo indep. variables; (157%)
 results.C.5.mreg$sigma
+
+
+# P-3-7
+
+table.D.8 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/problems_1ed/d-08.dat"), header = F, sep="")
+table.D.8 <- data.frame(P = table.D.8$V1,
+                        N = table.D.8$V2,
+                        E.group = table.D.8$V3,
+                        D.group = table.D.8$V4)
+write.csv(table.D.8, file = "Table_D.8.csv",
+          row.names = F)
+
+# Table of the data of Sato et al.
+Xamoterol <- c(0,0,0,0,1,1,1,1)
+E.group <- c(1,2,3,4,1,2,3,4)
+P.mean <- c(125,138,150,162,135,146,158,161)
+P.sd <- c(22,25,30,31,30,27,30,36)
+N.mean <- c(234,369,543,754,211,427,766,1068)
+N.sd <- c(87,165,205,279,106,257,355,551)
+n <- c(6,6,6,6,10,10,10,10)
+table.D.8.Sato <- data.frame(P.mean, P.sd, N.mean, N.sd, n, E.group, D.group = Xamoterol)
+
+ggplot(table.D.8.Sato, aes(x=N.mean, y=P.mean, color=as.factor(D.group) )) +
+  geom_point(shape=1) + 
+  # Errorbar
+  geom_errorbar(aes(
+    ymin=table.D.8.Sato$P.mean - table.D.8.Sato$P.sd, 
+    ymax=table.D.8.Sato$P.mean + table.D.8.Sato$P.sd,
+     width=.2)) +
+  geom_errorbarh(aes(
+    xmin=table.D.8.Sato$N.mean - table.D.8.Sato$N.sd, 
+    xmax=table.D.8.Sato$N.mean + table.D.8.Sato$N.sd),
+    width=.2) +
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE, # Don't add shaded confidence region
+              fullrange=TRUE)    # extend line
+
+D.8.Sato.lm <- summary(lm(formula = P.mean ~ N.mean + D.group , data = table.D.8.Sato))
+D.8.Sato.lm 
