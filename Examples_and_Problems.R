@@ -266,6 +266,7 @@ ggplot(table.D.5, aes(x = D.Ca, y = U.Ca)) +
               se=F)    # add shaded confidence region
 results.2.6.D.Ca <- summary(lm(formula = D.Ca ~ U.Ca, data = table.D.5))
 results.2.6.D.Ca$r.squared;
+# FIXME: create Function
 # p.value F-statistic:
 1 - pf(results.2.6.D.Ca$fstatistic[[1]], results.2.6.D.Ca$fstatistic[[2]], results.2.6.D.Ca$fstatistic[[3]])
 
@@ -336,6 +337,7 @@ s.y.x
 # determine confidence intervals:
 confint(lm(formula = weight ~ height + water.consumption, data = table.1.1))
 
+# FIXME: Create function
 ## getting the incremental sum of squares:
 #anova(lm(formula = weight ~ height + water.consumption, data = table.1.1))
 # used to test wether adding independent variables helps to predict the dependent variable
@@ -627,7 +629,38 @@ D.8.Sato.lm.D0 <- summary(lm(formula = P.mean ~ N.mean, data = table.D.8.Sato.D0
 table.D.8.Sato.D1 <- subset(table.D.8.Sato, D.group == 1)
 D.8.Sato.lm.D1 <- summary(lm(formula = P.mean ~ N.mean, data = table.D.8.Sato.D1))
 
+# FIXME: Function for comparison of two regression lines
 # Intersection of the two regression lines with D.group = 0 and 1
 # 131.2 + 0.03049x = 110.4 + 0.07013x
 # switch from stimulant -> blocker:
 #  524.7225 pg/mL
+## compare Slopes and Intercepts of the two regression lines 
+# t = (difference of regression slopes) / (standard error of difference of regression slopes)
+# t = (b1 - b2) / (sqrt(S²b1 + S²b2) )
+# with v = n1 + n2 - 4 df
+t.slope <- (D.8.Sato.lm.D0$coefficients[[2]] - D.8.Sato.lm.D1$coefficients[[2]]) / (sqrt(((D.8.Sato.lm.D0$coefficients[[4]])^2 + (D.8.Sato.lm.D1$coefficients[[4]])^2)))
+2*pt(abs(t.slope), df = 4, lower= FALSE) # two-tailed t-test
+
+t.intercept <- (D.8.Sato.lm.D0$coefficients[[1]] - D.8.Sato.lm.D1$coefficients[[1]]) / (sqrt(((D.8.Sato.lm.D0$coefficients[[3]])^2 + (D.8.Sato.lm.D1$coefficients[[3]])^2)))
+2*pt(abs(t.intercept), df = 4, lower= FALSE) # two-tailed t-test
+
+# B
+D.8.mreg <- lm(formula = P ~ N + D.group , data = table.D.8)
+summary(D.8.mreg)
+
+table.D.8.D0 <- subset(table.D.8, D.group == 0)
+D.8.lm.D0 <- summary(lm(formula = P ~ N, data = table.D.8.D0))
+table.D.8.D1 <- subset(table.D.8, D.group == 1)
+D.8.lm.D1 <- summary(lm(formula = P ~ N, data = table.D.8.D1))
+
+# t-test for difference in slope
+t.slope <- (D.8.lm.D0$coefficients[[2]] - D.8.lm.D1$coefficients[[2]]) / (sqrt(((D.8.lm.D0$coefficients[[4]])^2 + (D.8.lm.D1$coefficients[[4]])^2)))
+2*pt(abs(t.slope), df = (length(table.D.8.D0$D.group) + length(table.D.8.D1$D.group) -4), lower= FALSE) # two-tailed t-test
+
+t.intercept <- (D.8.lm.D0$coefficients[[1]] - D.8.lm.D1$coefficients[[1]]) / (sqrt(((D.8.lm.D0$coefficients[[3]])^2 + (D.8.lm.D1$coefficients[[3]])^2)))
+2*pt(abs(t.intercept), df = (length(table.D.8.D0$D.group) + length(table.D.8.D1$D.group) -4), lower= FALSE) # two-tailed t-test
+
+## differences in the raw numbers seem to be due to differences in rounding
+
+
+# P-3.8
