@@ -669,3 +669,43 @@ D.5.mreg <- summary(lm(formula = U.Ca ~ D.Ca + D.p + U.Na + G.fr , data = tab.D.
 D.5.mreg
 
 # P-3.9
+tab.D.9 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/problems_1ed/d-09.dat"), header = F, sep="")
+tab.D.9 <- data.frame(L.uptake = tab.D.9$V1,
+                      time = tab.D.9$V2,
+                      Cholesterol = tab.D.9$V3)
+write.csv(tab.D.9, file = "tab.D.9.csv",
+          row.names = F)
+
+ggplot(tab.D.9, aes(x=time , y=L.uptake, color=as.factor(Cholesterol))) +
+  geom_point(shape=1)+ 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE,    # Don't add shaded confidence region
+              fullrange=TRUE) # Extend regression lines
+
+D.9.lm <- summary(lm(formula = L.uptake ~  time + Cholesterol , data = tab.D.9))
+D.9.lm
+# as the relationships don't seem to be linear but rather quadric:
+D.9.quadric <- summary(lm(formula = L.uptake ~ -1 + time + I(time^2) + I(time*Cholesterol) + I(time^2*Cholesterol) , data = tab.D.9)) # the -1 forces the intercept to be 0r
+D.9.quadric
+
+# 3-10
+
+tab.D.10 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/problems_1ed/d-10.dat"), header = F, sep="")
+tab.D.10 <- data.frame(R = tab.D.10$V1,
+                      B = tab.D.10$V2,
+                      C.Code = tab.D.10$V3)
+write.csv(tab.D.10, file = "tab.D.10.csv",
+          row.names = F)
+
+ggplot(tab.D.10, aes(x=B , y=R, color=as.factor(C.Code))) +
+  geom_point(shape=1)+ 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE,    # Don't add shaded confidence region
+              fullrange=TRUE) # Extend regression lines
+
+D.10.lm <- summary(lm(formula = R ~  B + C.Code + I(B*C.Code) , data = tab.D.10))
+D.10.lm
+
+# testing whether the combined regression is sig. different from 1:
+D.10.lm.B <- summary(lm(formula = R ~  B , data = tab.D.10))
+D.10.lm.B
