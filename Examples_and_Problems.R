@@ -688,7 +688,7 @@ D.9.lm
 D.9.quadric <- summary(lm(formula = L.uptake ~ -1 + time + I(time^2) + I(time*Cholesterol) + I(time^2*Cholesterol) , data = tab.D.9)) # the -1 forces the intercept to be 0r
 D.9.quadric
 
-# 3-10
+# P-3-10
 
 tab.D.10 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/problems_1ed/d-10.dat"), header = F, sep="")
 tab.D.10 <- data.frame(R = tab.D.10$V1,
@@ -709,3 +709,74 @@ D.10.lm
 # testing whether the combined regression is sig. different from 1:
 D.10.lm.B <- summary(lm(formula = R ~  B , data = tab.D.10))
 D.10.lm.B
+
+# P-3-11
+tab.D.3 <- read.csv("tab.D.3.csv")
+# Dose 0: 1-4 h intervals; 1: 6-12 h intervals
+ggplot(tab.D.3, aes(x=time.a.MIC , y=CFU, color=as.factor(Dose))) +
+  geom_point(shape=1)+ 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE,    # Don't add shaded confidence region
+              fullrange=TRUE) # Extend regression lines
+D.3.lm <- summary(lm(formula = CFU ~  time.a.MIC + Dose + I(time.a.MIC*Dose), data = tab.D.3))
+# I(time.a.MIC*Dose) := relationship between time.a.MIC and dummy variable "Dose"
+D.3.lm
+# shows differences in the Intercepts ("(Intercept)" and "Dose") and slopes ("time.a.MIC","I(time.a.MIC*Dose)") 
+# => both groups of data are different
+
+# P-3-12
+tab.D.6 <- read.csv("tab.D.6.csv")
+
+D.6.lm <- summary(lm(formula = type.F ~ T.1 + T.2, data = tab.D.6))
+# I(time.a.MIC*Dose) := relationship between time.a.MIC and dummy variable "Dose"
+D.6.lm
+
+
+# P-3-13
+tab.D.11 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/problems_1ed/d-11.dat"), header = F, sep="")
+tab.D.11 <- data.frame(S = tab.D.11$V1,
+                      Delta.S = tab.D.11$V2,
+                      Freq = tab.D.11$V3)
+write.csv(tab.D.11, file = "tab.D.11.csv",
+          row.names = F)
+
+ggplot(tab.D.11, aes(x=Delta.S , y=S, color=as.factor(Freq))) +
+  geom_point(shape=1)+ 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE,    # Don't add shaded confidence region
+              fullrange=TRUE) # Extend regression lines
+# Interaction model as the slope of the 4 lines increases with F:
+D.11.lm <- summary(lm(formula = S ~ Delta.S + Freq + I(Delta.S*Freq), data = tab.D.11))
+# I(time.a.MIC*Dose) := relationship between time.a.MIC and dummy variable "Dose"
+D.11.lm
+
+# P-3-14
+tab.D.12 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/problems_1ed/d-12.dat"), header = F, sep="")
+tab.D.12 <- data.frame(V = tab.D.12$V1,
+                       O = tab.D.12$V2,
+                       C = tab.D.12$V3)
+write.csv(tab.D.12, file = "tab.D.12.csv",
+          row.names = F)
+
+D.12.lm <- summary(lm(formula = V ~ O + C , data = tab.D.12))
+# I(time.a.MIC*Dose) := relationship between time.a.MIC and dummy variable "Dose"
+D.12.lm
+
+# P-3-15
+
+# Baby birds:
+tab.C.5 <- read.csv("tab.C.5.csv")
+# Adding dummy-variables and combine data sets
+tab.C.5.D <- cbind(tab.C.5, D = rep(1,length(tab.C.5[,1])))
+tab.D.12.D <- cbind(tab.D.12, D = rep(0,length(tab.D.12[,1])))
+tab.P.3.15 <- rbind(tab.C.5.D, tab.D.12.D)
+
+# Interaction of D(bird type) with O and C
+tab.P.3.15.lm <- summary(lm(formula = V ~ O + C + D + I(O*D) + I(C*D)  , data = tab.P.3.15))
+tab.P.3.15.lm
+
+
+
+
+
+
