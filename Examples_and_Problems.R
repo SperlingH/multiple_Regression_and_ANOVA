@@ -766,8 +766,9 @@ D.12.lm
 
 # Baby birds:
 tab.C.5 <- read.csv("tab.C.5.csv")
+tab.D.12 <- read.csv("tab.D.12.csv")
 # Adding dummy-variables and combine data sets
-tab.C.5.D <- cbind(tab.C.5, D = rep(1,length(tab.C.5[,1])))
+tab.C.5.D <- cbind(tab.C.5, D = rep(1,length(tab.C.5[,1]))) # dummy variable for baby birds = 1
 tab.D.12.D <- cbind(tab.D.12, D = rep(0,length(tab.D.12[,1])))
 tab.P.3.15 <- rbind(tab.C.5.D, tab.D.12.D)
 
@@ -775,8 +776,28 @@ tab.P.3.15 <- rbind(tab.C.5.D, tab.D.12.D)
 tab.P.3.15.lm <- summary(lm(formula = V ~ O + C + D + I(O*D) + I(C*D)  , data = tab.P.3.15))
 tab.P.3.15.lm
 
+#  D: Intercept of the adult plane
+# I(O*D): Higher sensitiviy of the adults to oxygen compared to baby birds (by 7 Units)
+# I(C*D): Higher sensitivity of the adults to carbon dioxide compared to baby birds (by 2.3 Units)
+# !! compare with P-3-14 !!
 
+# P-3-16
+# compute 95%- confidence intervals to oxygen
+# determine confidence intervals:
+tab.D.12 <- read.csv("tab.D.12.csv")
+confint(lm(formula = V ~ O, data = tab.D.12), level = 0.912) #  91.2 confint to get the results in the errata
+# confidence interval includes 0 ! => cannot conclude that the parameter is different from zero!
 
+# P-3-17
 
+tab.D.2 <- read.csv("tab.D.2.csv")
 
+ggplot(tab.D.2, aes(x=Lung.Cancer, y=Breast.Cancer)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
 
+P.3.17.lm <- summary(lm(formula = Breast.Cancer ~  Animal.Fat + Lung.Cancer, data = tab.D.2))
+P.3.17.lm
+P.3.17.lm.interact <- summary(lm(formula = Breast.Cancer ~ Animal.Fat + Lung.Cancer  + I(Animal.Fat*Lung.Cancer) , data = tab.D.2))
+P.3.17.lm.interact
