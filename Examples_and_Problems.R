@@ -801,3 +801,138 @@ P.3.17.lm <- summary(lm(formula = Breast.Cancer ~  Animal.Fat + Lung.Cancer, dat
 P.3.17.lm
 P.3.17.lm.interact <- summary(lm(formula = Breast.Cancer ~ Animal.Fat + Lung.Cancer  + I(Animal.Fat*Lung.Cancer) , data = tab.D.2))
 P.3.17.lm.interact
+
+
+# Chapter 4
+# regression diagnostics
+# 1. regression model
+# 2. normality
+# 3. equal variance
+# 4. independence
+
+# Table 4-1
+tab.C.8A <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/marsint1.dat"), header = F, sep="")
+tab.C.8A  <- data.frame(Intelligence = tab.C.8A $V1,
+                       Foot.Size = tab.C.8A $V2)
+write.csv(tab.C.8A, file = "tab.C.8A",
+          row.names = F)
+C.8A.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8A))
+C.8A.lm
+
+tab.C.8B <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/marsint2.dat"), header = F, sep="")
+tab.C.8B  <- data.frame(Intelligence = tab.C.8B$V1,
+                        Foot.Size = tab.C.8B$V2)
+write.csv(tab.C.8B, file = "tab.C.8B",
+          row.names = F)
+C.8B.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8B))
+C.8B.lm
+
+tab.C.8C <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/marsint3.dat"), header = F, sep="")
+tab.C.8C  <- data.frame(Intelligence = tab.C.8C$V1,
+                        Foot.Size = tab.C.8C$V2)
+write.csv(tab.C.8C, file = "tab.C.8C",
+          row.names = F)
+C.8C.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8C))
+C.8C.lm
+
+tab.C.8D <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/marsint4.dat"), header = F, sep="")
+tab.C.8D  <- data.frame(Intelligence = tab.C.8D$V1,
+                        Foot.Size = tab.C.8D$V2)
+write.csv(tab.C.8D, file = "tab.C.8D",
+          row.names = F)
+C.8D.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8D))
+C.8D.lm
+
+Fig.C.8A <- ggplot(tab.C.8A, aes(x=Foot.Size, y=Intelligence)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+# model misspecification:
+Fig.C.8B <- ggplot(tab.C.8B, aes(x=Foot.Size, y=Intelligence)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+# outlier (levarage points):
+Fig.C.8C <- ggplot(tab.C.8C, aes(x=Foot.Size, y=Intelligence)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+# extreme outlier (levarage points):
+Fig.C.8D <- ggplot(tab.C.8D, aes(x=Foot.Size, y=Intelligence)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+require("gridExtra")
+grid.arrange(Fig.C.8A, Fig.C.8B, Fig.C.8C, Fig.C.8D, ncol=2)
+
+
+# testing for problems: Looking at residuals
+# 1. Assumption of constant variance: plots of the residuals as function of indep. or dep. variable
+# 2. Normalize residuals to identify outliers
+
+# plotting residuals:
+tab.C.8A.res <- cbind(tab.C.8A, residuals = C.8A.lm$residuals)
+Fig.C.8A.res <- ggplot(tab.C.8A.res, aes(x=Foot.Size, y=residuals)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+Fig.C.8A.res
+
+tab.C.8B.res <- cbind(tab.C.8B, residuals = C.8B.lm$residuals)
+Fig.C.8B.res <- ggplot(tab.C.8B.res, aes(x=Foot.Size, y=residuals)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+Fig.C.8B.res
+
+tab.C.8C.res <- cbind(tab.C.8C, residuals = C.8C.lm$residuals)
+Fig.C.8C.res <- ggplot(tab.C.8C.res, aes(x=Foot.Size, y=residuals)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+Fig.C.8C.res
+
+tab.C.8D.res <- cbind(tab.C.8D, residuals = C.8D.lm$residuals)
+Fig.C.8D.res <- ggplot(tab.C.8D.res, aes(x=Foot.Size, y=residuals)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+Fig.C.8D.res
+
+require("gridExtra")
+grid.arrange(Fig.C.8A.res, Fig.C.8B.res, Fig.C.8C.res, Fig.C.8D.res, ncol=2)
+
+
+# Fig.4.7
+data.4.7 <- read.csv("tab.1.1.csv")
+fig.4.7.mreg <- summary(lm(formula = weight ~ height + water.consumption, data = data.4.7))
+
+data.4.7.res <- cbind(data.4.7, residuals = fig.4.7.mreg$residuals)
+fig.4.7.res.hght <- ggplot(data.4.7.res, aes(x=height, y=residuals)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+fig.4.7.res.hght
+
+fig.4.7.res.wtr <- ggplot(data.4.7.res, aes(x=water.consumption, y=residuals)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+fig.4.7.res.wtr
+
+fig.4.7.res.wgt <- ggplot(data.4.7.res, aes(x=weight, y=residuals)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+fig.4.7.res.wgt
+
+# predicted weight
+# y = b0 + x1*b1 +x2*b2
+data.4.7.res <- cbind(data.4.7.res, pred.weight = fig.4.7.mreg$coefficients[[1]] + fig.4.7.mreg$coefficients[[2]]*data.4.7.res$height + fig.4.7.mreg$coefficients[[3]]*data.4.7.res$water.consumption)
+
+fig.4.7.res.prdwgt <- ggplot(data.4.7.res, aes(x=pred.weight, y=residuals)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+fig.4.7.res.prdwgt
+
