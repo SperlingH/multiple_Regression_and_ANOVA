@@ -864,7 +864,7 @@ Fig.C.8D <- ggplot(tab.C.8D, aes(x=Foot.Size, y=Intelligence)) +
               se=FALSE)    # Don't add shaded confidence region
 require("gridExtra")
 grid.arrange(Fig.C.8A, Fig.C.8B, Fig.C.8C, Fig.C.8D, ncol=2)
-
+# Fig.4.2
 
 # testing for problems: Looking at residuals
 # 1. Assumption of constant variance: plots of the residuals as function of indep. or dep. variable
@@ -935,4 +935,136 @@ fig.4.7.res.prdwgt <- ggplot(data.4.7.res, aes(x=pred.weight, y=residuals)) +
   geom_smooth(method=lm,   # Add linear regression line
               se=FALSE)    # Don't add shaded confidence region
 fig.4.7.res.prdwgt
+
+# raw residuals => identify outliers; Problem: values depend on scale and units
+# residuals:
+resid(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8C))
+
+# standardized residuals => normalize  raw residuals by the standard error of the estimate
+#   standard residual 1: residual is 1 standard deviation off the regression plane
+#   normal distribution: ~66% fall into 1 standard deviation of the mean, ~95% fall within 2 standard deviations
+#   points above 3 are likely outliers
+tab.C.8C <- read.csv("tab.C.8C")
+C.8C.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8C))
+# computing standardized residuals
+# FIXME check for built-in-functions and/or create function
+# Problem: both deviate from the solution 2.76 for the 3. data-point
+C.8C.lm.stand.res <- C.8C.lm$residuals/C.8C.lm$sigma
+# built-in function: rstandard()
+# rstandard(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8C))
+# uses a different formula with the leverage included!
+# e_1 / (s_e * sqrt(1-leverage_1))
+
+# check for outliers
+boxplot(C.8C.lm.stand.res)
+summary(C.8C.lm.stand.res > 2)
+
+# compare with C.8D
+tab.C.8D <- read.csv("tab.C.8D")
+C.8D.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8D))
+# computing standardized residuals
+# FIXME check for built-in-functions and/or create function
+# Problem: both deviate from the solution 2.76 for the 3. data-point
+C.8D.lm.stand.res <- C.8D.lm$residuals/C.8D.lm$sigma
+# built-in function: rstandard()
+# rstandard(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8C))
+# uses a different formula with the leverage included!
+# e_1 / (s_e * sqrt(1-leverage_1))
+
+# check for outliers
+boxplot(C.8D.lm.stand.res)
+summary(C.8D.lm.stand.res > 2)
+# no outliers in the standardized residuals! But compare with the graph above!
+
+##
+# Test for Normality of the Residuals
+# 1. plot frequency distribution of residuals
+# 2. normal probability plot of the residuals
+#   plot of the cumulative freq. of the distribution of the resuduals vs. the residuals on a special scale
+#   produces a straight line if distr. is normal
+
+tab.C.8A <- read.csv("tab.C.8A")
+C.8A.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8A))
+C.8.A.lm.residuals <- data.frame(residuals = C.8A.lm$residuals)
+ggplot(C.8.A.lm.residuals, aes(x=residuals)) + 
+  geom_dotplot(binwidth = 0.3) # plotting discreet values
+# Problem: You get only consistent plots if you set the binwidth to certain cut-offs
+
+tab.C.8B <- read.csv("tab.C.8B")
+C.8A.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8B))
+C.8.A.lm.residuals <- data.frame(residuals = C.8A.lm$residuals)
+ggplot(C.8.A.lm.residuals, aes(x=residuals)) + 
+  geom_dotplot(binwidth = 0.3) # plotting discreet values
+
+tab.C.8C <- read.csv("tab.C.8C")
+C.8A.lm <- summary(lm(formula = IntC.8A.lmelligence ~  Foot.Size, data = tab.C.8C))
+C.8.A.lm.residuals <- data.frame(residuals = C.8A.lm$residuals)
+ggplot(C.8.A.lm.residuals, aes(x=residuals)) + 
+  geom_dotplot(binwidth = 0.3) # plotting discreet values
+
+tab.C.8D <- read.csv("tab.C.8D")
+C.8A.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8D))
+C.8.A.lm.residuals <- data.frame(residuals = C.8A.lm$residuals)
+ggplot(C.8.A.lm.residuals, aes(x=residuals)) + 
+  geom_dotplot(binwidth = 0.3) # plotting discreet values
+
+# normal probability plots
+tab.C.8A <- read.csv("tab.C.8A")
+C.8A.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8A))
+res.ordered <- sort(C.8A.lm$residuals)
+rank.res <- c(1:length(C.8A.lm$residuals)) 
+cum.freq.res <- (rank.res - 0.5)/length(C.8A.lm$residuals) # cumulative frequency
+C.8A.norm <- data.frame(res.ordered,rank.res,cum.freq.res )
+C.8A.norm.plot <- ggplot(C.8A.norm , aes(x=res.ordered, y=cum.freq.res)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+C.8A.norm.plot
+
+tab.C.8B <- read.csv("tab.C.8B")
+C.8B.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8B))
+res.ordered <- sort(C.8B.lm$residuals)
+rank.res <- c(1:length(C.8B.lm$residuals)) 
+cum.freq.res <- (rank.res - 0.5)/length(C.8B.lm$residuals) # cumulative frequency
+C.8B.norm <- data.frame(res.ordered,rank.res,cum.freq.res )
+C.8B.norm.plot <- ggplot(C.8B.norm , aes(x=res.ordered, y=cum.freq.res)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+C.8B.norm.plot
+
+tab.C.8C <- read.csv("tab.C.8C")
+C.8C.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8C))
+res.ordered <- sort(C.8C.lm$residuals)
+rank.res <- c(1:length(C.8C.lm$residuals)) 
+cum.freq.res <- (rank.res - 0.5)/length(C.8C.lm$residuals) # cumulative frequency
+C.8C.norm <- data.frame(res.ordered,rank.res,cum.freq.res )
+C.8C.norm.plot <- ggplot(C.8C.norm , aes(x=res.ordered, y=cum.freq.res)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+C.8C.norm.plot
+
+tab.C.8D <- read.csv("tab.C.8D")
+C.8D.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8D))
+res.ordered <- sort(C.8D.lm$residuals)
+rank.res <- c(1:length(C.8D.lm$residuals)) 
+cum.freq.res <- (rank.res - 0.5)/length(C.8D.lm$residuals) # cumulative frequency
+C.8D.norm <- data.frame(res.ordered,rank.res,cum.freq.res )
+C.8D.norm.plot <- ggplot(C.8D.norm , aes(x=res.ordered, y=cum.freq.res)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+C.8D.norm.plot
+
+require("gridExtra")
+grid.arrange(C.8A.norm.plot,C.8B.norm.plot,C.8C.norm.plot,C.8D.norm.plot, ncol=2)
+
+# leverage
+
+# Studentized residuals,
+
+# Cook's distance
+
+
 
