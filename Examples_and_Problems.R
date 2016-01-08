@@ -967,7 +967,7 @@ C.8D.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8D))
 # Problem: both deviate from the solution 2.76 for the 3. data-point
 C.8D.lm.stand.res <- C.8D.lm$residuals/C.8D.lm$sigma
 # built-in function: rstandard()
-# rstandard(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8C))
+# rstandard(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8D))
 # uses a different formula with the leverage included!
 # e_1 / (s_e * sqrt(1-leverage_1))
 
@@ -1060,9 +1060,51 @@ C.8D.norm.plot
 require("gridExtra")
 grid.arrange(C.8A.norm.plot,C.8B.norm.plot,C.8C.norm.plot,C.8D.norm.plot, ncol=2)
 
-# leverage
+# leverage (h_ij)
+# quantifies how much the observed value of a dependent variable affects the estimated value
+# the expected (avarage) value of the leverage is (k+1)/n (k beeing the number of independent variable in the regression equation)
+# if h_ij > 2(k+1)/n then this is considered a high leverage
+tab.C.8D <- read.csv("tab.C.8D")
+Fig.C.8D <- ggplot(tab.C.8D, aes(x=Foot.Size, y=Intelligence)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+C.8D.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8D))
 
-# Studentized residuals,
+# computing the leverage and expected leverage
+# FIXME: Create a function 
+deviation.sqr <- (tab.C.8D$Foot.Size - mean(tab.C.8D$Foot.Size))^2
+deviation.sqr.sum <- sum(deviation.sqr)
+leverage <- (1/length(tab.C.8D$Foot.Size) + deviation.sqr/deviation.sqr.sum)
+no.of.var <- 1 # here: ONE independent variable
+leverage.expected <- (no.of.var + 1)/(length(tab.C.8D$Foot.Size))
+leverage > 2*leverage.expected # exceeds the leverage twice the expected value? If so, this point needs special attention.
+
+# Studentized residuals
+# "refined" normalization of the residuals -> standardized residuals taking into account the specific standard error; "internally Studentized residual", using all the data ; takes the leverage into account; see above "standardized residuals"
+# alternatively: "externally Studentized residual" or "Studentized deleted residual"; s_y|x is computed after deleting the point associated with the residual; if it is an outlier the variance  will change if not there is not much an effect on the variance
+
+tab.C.8A <- read.csv("tab.C.8A")
+C.8A.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8A))
+C.8A.lm.stud.res <- rstandard(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8A))
+# e_1 / (s_e * sqrt(1-leverage_1))
+C.8A.lm.stud.del.res <- rstudent(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8A))
+# gives the Studentized deleted residuals
+
+tab.C.8C <- read.csv("tab.C.8C")
+C.8C.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8C))
+C.8C.lm.stud.res <- rstandard(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8C))
+# e_1 / (s_e * sqrt(1-leverage_1))
+C.8C.lm.stud.del.res <- rstudent(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8C))
+# gives the Studentized deleted residuals
+
+tab.C.8D <- read.csv("tab.C.8D")
+C.8D.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8D))
+C.8D.lm.stud.res <- rstandard(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8D))
+# e_1 / (s_e * sqrt(1-leverage_1))
+C.8D.lm.stud.del.res <- rstudent(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8D))
+# gives the Studentized deleted residuals
+
 
 # Cook's distance
 
