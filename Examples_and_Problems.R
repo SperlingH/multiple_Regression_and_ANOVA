@@ -1107,6 +1107,29 @@ C.8D.lm.stud.del.res <- rstudent(lm(formula = Intelligence ~  Foot.Size, data = 
 
 
 # Cook's distance
+# assesment of influence of data points on regression equation
 
+tab.C.8A <- read.csv("tab.C.8A")
+summary(C.8A.lm <-lm(formula = Intelligence ~  Foot.Size, data = tab.C.8A))
+cooks.distance(C.8A.lm)
+# if the cook's distance is a big number, it indicates that the corresponding point has a major effect on the regression coefficients
+# it depends on the internally studentized residuals and the leverage
+# tends to follow a F-distribution with numerators: k+1 and denominator n-k-1 degrees of freedom
+# points > 1  are worth for further investigation
+# points > 4 are potentially serious outliers.
 
+# FIXME: function to get all components of the regression equation computed if all points were excluded one by one
+# FIXME: Plot of the regression intercept vs regression slopes of the corresponding regression equations
 
+tab.C.8C <- read.csv("tab.C.8C")
+summary(C.8C.lm <-lm(formula = Intelligence ~  Foot.Size, data = tab.C.8C))
+cooks.distance(C.8C.lm)
+
+tab.C.8D <- read.csv("tab.C.8D")
+summary(C.8D.lm <-lm(formula = Intelligence ~  Foot.Size, data = tab.C.8D))
+cooks.distance(C.8D.lm)
+
+## other Diagnostics:
+# PRESS residual
+# DEFITS
+# DFBETAS
