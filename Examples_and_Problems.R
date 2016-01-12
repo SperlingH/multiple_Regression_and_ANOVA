@@ -814,7 +814,7 @@ P.3.17.lm.interact
 tab.C.8A <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/marsint1.dat"), header = F, sep="")
 tab.C.8A  <- data.frame(Intelligence = tab.C.8A $V1,
                        Foot.Size = tab.C.8A $V2)
-write.csv(tab.C.8A, file = "tab.C.8A",
+write.csv(tab.C.8A, file = "tab.C.8A.csv",
           row.names = F)
 C.8A.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8A))
 C.8A.lm
@@ -822,7 +822,7 @@ C.8A.lm
 tab.C.8B <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/marsint2.dat"), header = F, sep="")
 tab.C.8B  <- data.frame(Intelligence = tab.C.8B$V1,
                         Foot.Size = tab.C.8B$V2)
-write.csv(tab.C.8B, file = "tab.C.8B",
+write.csv(tab.C.8B, file = "tab.C.8B.csv",
           row.names = F)
 C.8B.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8B))
 C.8B.lm
@@ -830,7 +830,7 @@ C.8B.lm
 tab.C.8C <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/marsint3.dat"), header = F, sep="")
 tab.C.8C  <- data.frame(Intelligence = tab.C.8C$V1,
                         Foot.Size = tab.C.8C$V2)
-write.csv(tab.C.8C, file = "tab.C.8C",
+write.csv(tab.C.8C, file = "tab.C.8C.csv",
           row.names = F)
 C.8C.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8C))
 C.8C.lm
@@ -838,7 +838,7 @@ C.8C.lm
 tab.C.8D <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/marsint4.dat"), header = F, sep="")
 tab.C.8D  <- data.frame(Intelligence = tab.C.8D$V1,
                         Foot.Size = tab.C.8D$V2)
-write.csv(tab.C.8D, file = "tab.C.8D",
+write.csv(tab.C.8D, file = "tab.C.8D.csv",
           row.names = F)
 C.8D.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8D))
 C.8D.lm
@@ -944,7 +944,7 @@ resid(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8C))
 #   standard residual 1: residual is 1 standard deviation off the regression plane
 #   normal distribution: ~66% fall into 1 standard deviation of the mean, ~95% fall within 2 standard deviations
 #   points above 3 are likely outliers
-tab.C.8C <- read.csv("tab.C.8C")
+tab.C.8C <- read.csv("tab.C.8C.csv")
 C.8C.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8C))
 # computing standardized residuals
 # FIXME check for built-in-functions and/or create function
@@ -960,7 +960,7 @@ boxplot(C.8C.lm.stand.res)
 summary(C.8C.lm.stand.res > 2)
 
 # compare with C.8D
-tab.C.8D <- read.csv("tab.C.8D")
+tab.C.8D <- read.csv("tab.C.8D.csv")
 C.8D.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8D))
 # computing standardized residuals
 # FIXME check for built-in-functions and/or create function
@@ -983,33 +983,33 @@ summary(C.8D.lm.stand.res > 2)
 #   plot of the cumulative freq. of the distribution of the resuduals vs. the residuals on a special scale
 #   produces a straight line if distr. is normal
 
-tab.C.8A <- read.csv("tab.C.8A")
+tab.C.8A <- read.csv("tab.C.8A.csv")
 C.8A.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8A))
 C.8.A.lm.residuals <- data.frame(residuals = C.8A.lm$residuals)
 ggplot(C.8.A.lm.residuals, aes(x=residuals)) + 
   geom_dotplot(binwidth = 0.3) # plotting discreet values
 # Problem: You get only consistent plots if you set the binwidth to certain cut-offs
 
-tab.C.8B <- read.csv("tab.C.8B")
+tab.C.8B <- read.csv("tab.C.8B.csv")
 C.8A.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8B))
 C.8.A.lm.residuals <- data.frame(residuals = C.8A.lm$residuals)
 ggplot(C.8.A.lm.residuals, aes(x=residuals)) + 
   geom_dotplot(binwidth = 0.3) # plotting discreet values
 
-tab.C.8C <- read.csv("tab.C.8C")
+tab.C.8C <- read.csv("tab.C.8C.csv")
 C.8A.lm <- summary(lm(formula = IntC.8A.lmelligence ~  Foot.Size, data = tab.C.8C))
 C.8.A.lm.residuals <- data.frame(residuals = C.8A.lm$residuals)
 ggplot(C.8.A.lm.residuals, aes(x=residuals)) + 
   geom_dotplot(binwidth = 0.3) # plotting discreet values
 
-tab.C.8D <- read.csv("tab.C.8D")
+tab.C.8D <- read.csv("tab.C.8D.csv")
 C.8A.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8D))
 C.8.A.lm.residuals <- data.frame(residuals = C.8A.lm$residuals)
 ggplot(C.8.A.lm.residuals, aes(x=residuals)) + 
   geom_dotplot(binwidth = 0.3) # plotting discreet values
 
 # normal probability plots
-tab.C.8A <- read.csv("tab.C.8A")
+tab.C.8A <- read.csv("tab.C.8A.csv")
 C.8A.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8A))
 res.ordered <- sort(C.8A.lm$residuals)
 rank.res <- c(1:length(C.8A.lm$residuals)) 
@@ -1021,7 +1021,7 @@ C.8A.norm.plot <- ggplot(C.8A.norm , aes(x=res.ordered, y=cum.freq.res)) +
               se=FALSE)    # Don't add shaded confidence region
 C.8A.norm.plot
 
-tab.C.8B <- read.csv("tab.C.8B")
+tab.C.8B <- read.csv("tab.C.8B.csv")
 C.8B.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8B))
 res.ordered <- sort(C.8B.lm$residuals)
 rank.res <- c(1:length(C.8B.lm$residuals)) 
@@ -1033,7 +1033,7 @@ C.8B.norm.plot <- ggplot(C.8B.norm , aes(x=res.ordered, y=cum.freq.res)) +
               se=FALSE)    # Don't add shaded confidence region
 C.8B.norm.plot
 
-tab.C.8C <- read.csv("tab.C.8C")
+tab.C.8C <- read.csv("tab.C.8C.csv")
 C.8C.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8C))
 res.ordered <- sort(C.8C.lm$residuals)
 rank.res <- c(1:length(C.8C.lm$residuals)) 
@@ -1045,7 +1045,7 @@ C.8C.norm.plot <- ggplot(C.8C.norm , aes(x=res.ordered, y=cum.freq.res)) +
               se=FALSE)    # Don't add shaded confidence region
 C.8C.norm.plot
 
-tab.C.8D <- read.csv("tab.C.8D")
+tab.C.8D <- read.csv("tab.C.8D.csv")
 C.8D.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8D))
 res.ordered <- sort(C.8D.lm$residuals)
 rank.res <- c(1:length(C.8D.lm$residuals)) 
@@ -1064,7 +1064,7 @@ grid.arrange(C.8A.norm.plot,C.8B.norm.plot,C.8C.norm.plot,C.8D.norm.plot, ncol=2
 # quantifies how much the observed value of a dependent variable affects the estimated value
 # the expected (avarage) value of the leverage is (k+1)/n (k beeing the number of independent variable in the regression equation)
 # if h_ij > 2(k+1)/n then this is considered a high leverage
-tab.C.8D <- read.csv("tab.C.8D")
+tab.C.8D <- read.csv("tab.C.8D.csv")
 Fig.C.8D <- ggplot(tab.C.8D, aes(x=Foot.Size, y=Intelligence)) +
   geom_point(shape=1) + 
   geom_smooth(method=lm,   # Add linear regression line
@@ -1084,21 +1084,21 @@ leverage > 2*leverage.expected # exceeds the leverage twice the expected value? 
 # "refined" normalization of the residuals -> standardized residuals taking into account the specific standard error; "internally Studentized residual", using all the data ; takes the leverage into account; see above "standardized residuals"
 # alternatively: "externally Studentized residual" or "Studentized deleted residual"; s_y|x is computed after deleting the point associated with the residual; if it is an outlier the variance  will change if not there is not much an effect on the variance
 
-tab.C.8A <- read.csv("tab.C.8A")
+tab.C.8A <- read.csv("tab.C.8A.csv")
 C.8A.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8A))
 C.8A.lm.stud.res <- rstandard(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8A))
 # e_1 / (s_e * sqrt(1-leverage_1))
 C.8A.lm.stud.del.res <- rstudent(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8A))
 # gives the Studentized deleted residuals
 
-tab.C.8C <- read.csv("tab.C.8C")
+tab.C.8C <- read.csv("tab.C.8C.csv")
 C.8C.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8C))
 C.8C.lm.stud.res <- rstandard(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8C))
 # e_1 / (s_e * sqrt(1-leverage_1))
 C.8C.lm.stud.del.res <- rstudent(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8C))
 # gives the Studentized deleted residuals
 
-tab.C.8D <- read.csv("tab.C.8D")
+tab.C.8D <- read.csv("tab.C.8D.csv")
 C.8D.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8D))
 C.8D.lm.stud.res <- rstandard(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8D))
 # e_1 / (s_e * sqrt(1-leverage_1))
@@ -1109,7 +1109,7 @@ C.8D.lm.stud.del.res <- rstudent(lm(formula = Intelligence ~  Foot.Size, data = 
 # Cook's distance
 # assesment of influence of data points on regression equation
 
-tab.C.8A <- read.csv("tab.C.8A")
+tab.C.8A <- read.csv("tab.C.8A.csv")
 summary(C.8A.lm <-lm(formula = Intelligence ~  Foot.Size, data = tab.C.8A))
 cooks.distance(C.8A.lm)
 # if the cook's distance is a big number, it indicates that the corresponding point has a major effect on the regression coefficients
@@ -1121,11 +1121,11 @@ cooks.distance(C.8A.lm)
 # FIXME: function to get all components of the regression equation computed if all points were excluded one by one
 # FIXME: Plot of the regression intercept vs regression slopes of the corresponding regression equations
 
-tab.C.8C <- read.csv("tab.C.8C")
+tab.C.8C <- read.csv("tab.C.8C.csv")
 summary(C.8C.lm <-lm(formula = Intelligence ~  Foot.Size, data = tab.C.8C))
 cooks.distance(C.8C.lm)
 
-tab.C.8D <- read.csv("tab.C.8D")
+tab.C.8D <- read.csv("tab.C.8D.csv")
 summary(C.8D.lm <-lm(formula = Intelligence ~  Foot.Size, data = tab.C.8D))
 cooks.distance(C.8D.lm)
 
@@ -1140,7 +1140,7 @@ cooks.distance(C.8D.lm)
 tab.C.8E <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/marsint5.dat"), header = F, sep="")
 tab.C.8E  <- data.frame(Intelligence = tab.C.8E$V1,
                         Foot.Size = tab.C.8E$V2)
-write.csv(tab.C.8E, file = "tab.C.8E",
+write.csv(tab.C.8E, file = "tab.C.8E.csv",
           row.names = F)
 
 
