@@ -997,7 +997,7 @@ ggplot(C.8.A.lm.residuals, aes(x=residuals)) +
   geom_dotplot(binwidth = 0.3) # plotting discreet values
 
 tab.C.8C <- read.csv("tab.C.8C.csv")
-C.8A.lm <- summary(lm(formula = IntC.8A.lmelligence ~  Foot.Size, data = tab.C.8C))
+C.8A.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8C))
 C.8.A.lm.residuals <- data.frame(residuals = C.8A.lm$residuals)
 ggplot(C.8.A.lm.residuals, aes(x=residuals)) + 
   geom_dotplot(binwidth = 0.3) # plotting discreet values
