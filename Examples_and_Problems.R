@@ -1133,3 +1133,38 @@ cooks.distance(C.8D.lm)
 # PRESS residual
 # DEFITS
 # DFBETAS
+
+## What to do with influential observations?
+# I. Problems with the data:
+# 1. check for data entry errors
+tab.C.8E <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/marsint5.dat"), header = F, sep="")
+tab.C.8E  <- data.frame(Intelligence = tab.C.8E$V1,
+                        Foot.Size = tab.C.8E$V2)
+write.csv(tab.C.8E, file = "tab.C.8E",
+          row.names = F)
+
+
+# plotting raw data 
+fig.4.14 <- ggplot(tab.C.8E, aes(x=Foot.Size, y=Intelligence)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+fig.4.14
+# residual plot
+summary(dat.4.14.lm <- lm(formula = Intelligence ~  Foot.Size, data = tab.C.8E))
+# diagnostics
+temp.fig.4.15 <- data.frame(Intelligence = dat.4.14.lm$model[[1]],  
+                            Foot.Size = dat.4.14.lm$model[[2]], 
+                            residuals = dat.4.14.lm$residuals,
+                            stud.del.res = rstudent(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8E )),# Studentized deleted residuals)
+                            cooks.dist = cooks.distance(dat.4.14.lm))
+fig.4.15 <- ggplot(temp.fig.4.15, aes(x=Foot.Size, y=residuals)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+fig.4.15
+
+# 2. check for technical error
+# describe and justify pot hoc changes
+
+# II. Problems with the model
