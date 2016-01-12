@@ -812,8 +812,8 @@ P.3.17.lm.interact
 
 # Table 4-1
 tab.C.8A <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/marsint1.dat"), header = F, sep="")
-tab.C.8A  <- data.frame(Intelligence = tab.C.8A $V1,
-                       Foot.Size = tab.C.8A $V2)
+tab.C.8A  <- data.frame(Intelligence = tab.C.8A$V1,
+                       Foot.Size = tab.C.8A$V2)
 write.csv(tab.C.8A, file = "tab.C.8A.csv",
           row.names = F)
 C.8A.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8A))
