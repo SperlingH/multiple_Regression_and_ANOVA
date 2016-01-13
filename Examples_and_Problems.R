@@ -1168,3 +1168,49 @@ fig.4.15
 # describe and justify pot hoc changes
 
 # II. Problems with the model
+# 1. leaving out important variables
+#   -> analysis of residuals
+# 2. not taking into account nonlinearities or interactions
+#   -> analysis of residuals
+
+tab.1.1 <- read.csv("tab.1.1.csv")
+# plot residuals of regression weight on height against water consumpition
+summary(tab.1.1.lm <- lm(formula = weight ~ height, data = tab.1.1))
+
+fig.4.16.data <- data.frame(residuals = tab.1.1.lm$residuals, water.consumption = tab.1.1$water.consumption)
+fig.4.16 <- ggplot(fig.4.16.data, aes(x=water.consumption, y=residuals)) +
+  geom_point(shape=1) + 
+  geom_hline(y= 0, col = "darkgrey")
+fig.4.16
+# 1. no uniform distribution around zero if you don't include water.consumption in the regression equation
+# 2. linear trend of water.consumption visible; it is an determinant of weight
+# FIXME: add grafik with water.consumption in the regression equation (not presented in the book)
+
+# non-linear trends
+# plots of non-linear data with a linear model
+# Fig.4.17
+tab.C.8B <- read.csv("tab.C.8B.csv")
+summary(tab.C.8B.lm <- lm(formula = Intelligence ~ Foot.Size, data = tab.C.8B))
+tab.C.8B$residuals <- tab.C.8B.lm$residuals
+Fig.4.17A <- ggplot(tab.C.8B, aes(x=Foot.Size, y=residuals)) +
+  geom_point(shape=1) + 
+  geom_hline(y= 0, col = "darkgrey")
+Fig.4.17A
+Fig.4.17B <- ggplot(tab.C.8B, aes(x=Intelligence, y=residuals)) +
+  geom_point(shape=1) + 
+  geom_hline(y= 0, col = "darkgrey")
+Fig.4.17B
+
+# Fig.4.18
+tab.C.1 <- read.csv("tab.C.1.csv")
+summary(tab.C.1.lm <- lm(formula = C.b ~ degree.C, data = tab.C.1))
+tab.C.1$residuals <- tab.C.1.lm$residuals
+Fig.4.18A <- ggplot(tab.C.1, aes(x=degree.C, y=residuals)) +
+  geom_point(shape=1) + 
+  geom_hline(y= 0, col = "darkgrey")
+Fig.4.18A
+Fig.4.18B <- ggplot(tab.C.1, aes(x=C.b, y=residuals)) +
+  geom_point(shape=1) + 
+  geom_hline(y= 0, col = "darkgrey")
+Fig.4.18B
+
