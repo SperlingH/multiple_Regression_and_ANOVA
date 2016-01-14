@@ -1214,3 +1214,26 @@ Fig.4.18B <- ggplot(tab.C.1, aes(x=C.b, y=residuals)) +
   geom_hline(y= 0, col = "darkgrey")
 Fig.4.18B
 
+# Data transformations
+# 1. nonlinear  patter in the residuals
+#   tansformation to "flatten out" the residual plot
+# 2. variance of residuals is not constant
+#   random component of the measurement is a constant percentage error
+#   -> residual variance increases with the dependent variable
+#   "variance stablizing transformation" by Transformation of the dependent variale to make the resiuals more closely meet the assumption of constant variance
+#   might introduce nonlinearities
+#   transformations of the dependent variable introduce implicit weighting of different points into the process of estimating the parameters!
+
+# Quadric functions y = b0 + b1*X + b2*X^2
+ggplot(data.frame(x=c(0,0.75)), aes(x)) +
+  stat_function(fun=function(x) -2*x^2 + 2*x + 2, geom="line", aes(colour="b0,b1,b2>0")) +
+  stat_function(fun=function(x) 1*x^2 + 1*x + 2, geom="line", aes(colour="b0,b1>0; b2<0"))
+  #scale_colour_manual("Function", value=c("blue","red"), breaks=c("square","exp"))
+
+# Exponential functions ln(y) = b0 + b1*X
+ggplot(data.frame(x=c(0,1)), aes(x)) +
+  stat_function(fun = function(x) 5 + -1*log(x) , geom="line", aes(colour="b1 < 0")) +
+  stat_function(fun = function(x) 10 + 1*log(x) , geom="line", aes(colour="b1 > 0")) 
+
+# Power functions ln(y) = b0 + b1* ln(X)
+# FIXME - gives result of an exponential function!
