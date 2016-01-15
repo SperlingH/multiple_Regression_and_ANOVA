@@ -1224,16 +1224,22 @@ Fig.4.18B
 #   might introduce nonlinearities
 #   transformations of the dependent variable introduce implicit weighting of different points into the process of estimating the parameters!
 
-# Quadric functions y = b0 + b1*X + b2*X^2
+# Quadric functions 
+# y = b0 + b1*X + b2*X^2
+function1 <- function(x){-2*x^2 + 2*x + 2}
+function2 <- function(x){ 2*x^2 + 2*x + 2}
 ggplot(data.frame(x=c(0,0.75)), aes(x)) +
-  stat_function(fun=function(x) -2*x^2 + 2*x + 2, geom="line", aes(colour="b0,b1,b2>0")) +
-  stat_function(fun=function(x) 1*x^2 + 1*x + 2, geom="line", aes(colour="b0,b1>0; b2<0"))
+  stat_function(fun=function1, geom="line", aes(colour="b0,b1,b2>0")) +
+  stat_function(fun=function2, geom="line", aes(colour="b0,b1>0; b2<0"))
   #scale_colour_manual("Function", value=c("blue","red"), breaks=c("square","exp"))
 
-# Exponential functions ln(y) = b0 + b1*X
+# logarithmic functions
+# y = b0 + b1*log(x)
+function3 <- function(x) {5 + -1*log(x)}
+function4 <- function(x) {10 + 1*log(x)}
 ggplot(data.frame(x=c(0,1)), aes(x)) +
-  stat_function(fun = function(x) 5 + -1*log(x) , geom="line", aes(colour="b1 < 0")) +
-  stat_function(fun = function(x) 10 + 1*log(x) , geom="line", aes(colour="b1 > 0")) 
+  stat_function(fun = function3 , geom="line", aes(colour="b1 < 0")) +
+  stat_function(fun = function4 , geom="line", aes(colour="b1 > 0")) 
 
-# Power functions ln(y) = b0 + b1* ln(X)
-# FIXME - gives result of an exponential function!
+
+
