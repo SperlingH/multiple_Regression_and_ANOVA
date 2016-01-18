@@ -1241,5 +1241,30 @@ ggplot(data.frame(x=c(0,1)), aes(x)) +
   stat_function(fun = function3 , geom="line", aes(colour="b1 < 0")) +
   stat_function(fun = function4 , geom="line", aes(colour="b1 > 0")) 
 
+# FIXME
+# Add the other example equations with comments of the transformation type
 
+tab.C.9 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/placenta.dat"), header = F, sep="")
+tab.C.9 <- data.frame(D = tab.C.9$V1,
+                      U = tab.C.9$V2)
+write.csv(tab.C.9, file = "tab.C.9.csv",
+          row.names = F)
 
+ggplot(tab.C.9, aes(x=U, y=D)) +
+  geom_point(shape=1)+ 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+summary(tab.C.9.lm <- lm(formula = D ~ U, data = tab.C.9))
+
+#regression diagnostics of the linear model:
+tab.C.9$rstudent <- rstudent(tab.C.9.lm) # Studentized deleted residuals
+tab.C.9$cooks.dist <-cooks.distance(tab.C.9.lm) # Cook's distance
+# Leverage # FIXME: Create Function
+# FIXME Check leverage formula!
+deviation.sqr <- (tab.C.9$D - mean(tab.C.9$D))^2
+deviation.sqr.sum <- sum(deviation.sqr)
+leverage <- (1/length(tab.C.9$D) + deviation.sqr/deviation.sqr.sum)
+tab.C.9$leverage <- leverage
+no.of.var <- 1 # here: ONE independent variable
+leverage.expected <- (no.of.var + 1)/(length(tab.C.9$D))
+leverage > 2*leverage.expected # exceeds the leverage twice the expected value? If so, this point needs special attention.
