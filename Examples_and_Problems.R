@@ -1268,3 +1268,5 @@ tab.C.9$leverage <- leverage
 no.of.var <- 1 # here: ONE independent variable
 leverage.expected <- (no.of.var + 1)/(length(tab.C.9$D))
 leverage > 2*leverage.expected # exceeds the leverage twice the expected value? If so, this point needs special attention.
+
+# FIXME: Add plots of raw residuals
