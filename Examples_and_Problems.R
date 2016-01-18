@@ -1072,13 +1072,10 @@ Fig.C.8D <- ggplot(tab.C.8D, aes(x=Foot.Size, y=Intelligence)) +
 C.8D.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8D))
 
 # computing the leverage and expected leverage
-# FIXME: Create a function 
-deviation.sqr <- (tab.C.8D$Foot.Size - mean(tab.C.8D$Foot.Size))^2
-deviation.sqr.sum <- sum(deviation.sqr)
-leverage <- (1/length(tab.C.8D$Foot.Size) + deviation.sqr/deviation.sqr.sum)
+tab.C.8D$leverage <- hatvalues(tab.C.8D.lm) # function to compute leverage
 no.of.var <- 1 # here: ONE independent variable
-leverage.expected <- (no.of.var + 1)/(length(tab.C.8D$Foot.Size))
-leverage > 2*leverage.expected # exceeds the leverage twice the expected value? If so, this point needs special attention.
+tab.C.8D$leverage.expected <- (no.of.var + 1)/(length(tab.C.8D$D))
+tab.C.8D$leverage > 2*tab.C.8D$leverage.expected # exceeds the leverage twice the expected value? If so, this point needs special attention.
 
 # Studentized residuals
 # "refined" normalization of the residuals -> standardized residuals taking into account the specific standard error; "internally Studentized residual", using all the data ; takes the leverage into account; see above "standardized residuals"
@@ -1259,14 +1256,9 @@ summary(tab.C.9.lm <- lm(formula = D ~ U, data = tab.C.9))
 #regression diagnostics of the linear model:
 tab.C.9$rstudent <- rstudent(tab.C.9.lm) # Studentized deleted residuals
 tab.C.9$cooks.dist <-cooks.distance(tab.C.9.lm) # Cook's distance
-# Leverage # FIXME: Create Function
-# FIXME Check leverage formula!
-deviation.sqr <- (tab.C.9$D - mean(tab.C.9$D))^2
-deviation.sqr.sum <- sum(deviation.sqr)
-leverage <- (1/length(tab.C.9$D) + deviation.sqr/deviation.sqr.sum)
-tab.C.9$leverage <- leverage
+tab.C.9$leverage <- hatvalues(tab.C.9.lm)
 no.of.var <- 1 # here: ONE independent variable
-leverage.expected <- (no.of.var + 1)/(length(tab.C.9$D))
-leverage > 2*leverage.expected # exceeds the leverage twice the expected value? If so, this point needs special attention.
+tab.C.9$leverage.expected <- (no.of.var + 1)/(length(tab.C.9$D))
+tab.C.9$leverage > 2*tab.C.9$leverage.expected # exceeds the leverage twice the expected value? If so, this point needs special attention.
 
 # FIXME: Add plots of raw residuals
