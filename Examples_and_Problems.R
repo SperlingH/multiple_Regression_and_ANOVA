@@ -1254,11 +1254,100 @@ ggplot(tab.C.9, aes(x=U, y=D)) +
 summary(tab.C.9.lm <- lm(formula = D ~ U, data = tab.C.9))
 
 #regression diagnostics of the linear model:
-tab.C.9$rstudent <- rstudent(tab.C.9.lm) # Studentized deleted residuals
+tab.C.9$raw.residuals <-tab.C.9.lm$residuals # raw residuals
+tab.C.9$stud.del.res <- rstudent(tab.C.9.lm) # Studentized deleted residuals
 tab.C.9$cooks.dist <-cooks.distance(tab.C.9.lm) # Cook's distance
-tab.C.9$leverage <- hatvalues(tab.C.9.lm)
-no.of.var <- 1 # here: ONE independent variable
-tab.C.9$leverage.expected <- (no.of.var + 1)/(length(tab.C.9$D))
-tab.C.9$leverage > 2*tab.C.9$leverage.expected # exceeds the leverage twice the expected value? If so, this point needs special attention.
+tab.C.9$leverage <- hatvalues(tab.C.9.lm) # Leverage
+#no.of.var <- 1 # here: ONE independent variable
+#tab.C.9$leverage.expected <- (no.of.var + 1)/(length(tab.C.9$D))
+#tab.C.9$leverage > 2*tab.C.9$leverage.expected # exceeds the leverage twice the expected value? If so, this point needs special attention.
+# looking for outliers with a boxplot
+boxplot(tab.C.9$stud.del.res)
+boxplot(tab.C.9$leverage)
+boxplot(tab.C.9$cooks.dist)
+# => identifikation of an outlier
 
-# FIXME: Add plots of raw residuals
+# plotting the raw residuals
+fig.4.22.A <- ggplot(tab.C.9, aes(x=D, y=raw.residuals)) +
+  geom_point(shape=1) + 
+  geom_hline(y=0, col="darkgrey", size=2)
+fig.4.22.B <- ggplot(tab.C.9, aes(x=U, y=raw.residuals)) +
+  geom_point(shape=1) + 
+  geom_hline(y=0, col="darkgrey", size=2)
+require("gridExtra")
+grid.arrange(fig.4.22.A, fig.4.22.B, ncol=2)
+# => identifikation of an outlier by the pattern
+
+
+# computing the regression line without the 23. data-point
+tab.C.9 <- read.csv("tab.C.9.csv")
+# remove 23. row
+tab.C.9.w.o.23 <- tab.C.9[-c(23), ]
+
+ggplot(tab.C.9.w.o.23, aes(x=U, y=D)) +
+  geom_point(shape=1)+ 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+summary(tab.C.9.w.o.23.lm <- lm(formula = D ~ U, data = tab.C.9.w.o.23))
+
+#regression diagnostics of the linear model:
+tab.C.9.w.o.23$raw.residuals <-tab.C.9.w.o.23.lm$residuals # raw residuals
+tab.C.9.w.o.23$stud.del.res <- rstudent(tab.C.9.w.o.23.lm) # Studentized deleted residuals
+tab.C.9.w.o.23$cooks.dist <-cooks.distance(tab.C.9.w.o.23.lm) # Cook's distance
+tab.C.9.w.o.23$leverage <- hatvalues(tab.C.9.w.o.23.lm) # Leverage
+#no.of.var <- 1 # here: ONE independent variable
+#tab.C.9.w.o.23$leverage.expected <- (no.of.var + 1)/(length(tab.C.9.w.o.23$D))
+#tab.C.9.w.o.23$leverage > 2*tab.C.9.w.o.23$leverage.expected # exceeds the leverage twice the expected value? If so, this point needs special attention.
+# looking for outliers with a boxplot
+boxplot(tab.C.9.w.o.23$stud.del.res)
+boxplot(tab.C.9.w.o.23$leverage)
+boxplot(tab.C.9.w.o.23$cooks.dist)
+# => identifikation of an outlier
+
+# plotting the raw residuals
+fig.4.22.A.w.o.23 <- ggplot(tab.C.9.w.o.23, aes(x=D, y=raw.residuals)) +
+  geom_point(shape=1) + 
+  geom_hline(y=0, col="darkgrey", size=2)
+fig.4.22.B.w.o.23 <- ggplot(tab.C.9.w.o.23, aes(x=U, y=raw.residuals)) +
+  geom_point(shape=1) + 
+  geom_hline(y=0, col="darkgrey", size=2)
+require("gridExtra")
+grid.arrange(fig.4.22.A.w.o.23, fig.4.22.B.w.o.23, ncol=2)
+# => identifikation of an outlier by the pattern
+
+
+# computing the regression as a quadric function
+tab.C.9 <- read.csv("tab.C.9.csv")
+summary(tab.C.9.quad <- lm(formula = D ~ U + I(U^2), data = tab.C.9))
+ 
+ 
+ # 
+# ggplot(tab.C.9.w.o.23, aes(x=U, y=D)) +
+#   geom_point(shape=1)+ 
+#   geom_smooth(method=lm,   # Add linear regression line
+#               se=FALSE)    # Don't add shaded confidence region
+# 
+# #regression diagnostics of the linear model:
+# tab.C.9.w.o.23$raw.residuals <-tab.C.9.w.o.23.lm$residuals # raw residuals
+# tab.C.9.w.o.23$stud.del.res <- rstudent(tab.C.9.w.o.23.lm) # Studentized deleted residuals
+# tab.C.9.w.o.23$cooks.dist <-cooks.distance(tab.C.9.w.o.23.lm) # Cook's distance
+# tab.C.9.w.o.23$leverage <- hatvalues(tab.C.9.w.o.23.lm) # Leverage
+# #no.of.var <- 1 # here: ONE independent variable
+# #tab.C.9.w.o.23$leverage.expected <- (no.of.var + 1)/(length(tab.C.9.w.o.23$D))
+# #tab.C.9.w.o.23$leverage > 2*tab.C.9.w.o.23$leverage.expected # exceeds the leverage twice the expected value? If so, this point needs special attention.
+# # looking for outliers with a boxplot
+# boxplot(tab.C.9.w.o.23$stud.del.res)
+# boxplot(tab.C.9.w.o.23$leverage)
+# boxplot(tab.C.9.w.o.23$cooks.dist)
+# # => identifikation of an outlier
+# 
+# # plotting the raw residuals
+# fig.4.22.A.w.o.23 <- ggplot(tab.C.9.w.o.23, aes(x=D, y=raw.residuals)) +
+#   geom_point(shape=1) + 
+#   geom_hline(y=0, col="darkgrey", size=2)
+# fig.4.22.B.w.o.23 <- ggplot(tab.C.9.w.o.23, aes(x=U, y=raw.residuals)) +
+#   geom_point(shape=1) + 
+#   geom_hline(y=0, col="darkgrey", size=2)
+# require("gridExtra")
+# grid.arrange(fig.4.22.A.w.o.23, fig.4.22.B.w.o.23, ncol=2)
+# # => identifikation of an outlier by the pattern
