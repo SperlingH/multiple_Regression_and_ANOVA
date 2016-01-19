@@ -1319,9 +1319,19 @@ grid.arrange(fig.4.22.A.w.o.23, fig.4.22.B.w.o.23, ncol=2)
 # computing the regression as a quadric function
 tab.C.9 <- read.csv("tab.C.9.csv")
 summary(tab.C.9.quad <- lm(formula = D ~ U + I(U^2), data = tab.C.9))
+
+
+# # plotting with polynomial function fit
+# fit.func <- function(x, b0, b1, b2)(b0  + b1*x + b2*x^2)
+# arguments <- list(b0 = C.1.preg$coefficients[[1]], 
+#                   b1 = C.1.preg$coefficients[[2]], 
+#                   b2 = C.1.preg$coefficients[[3]])
+# 
+# ggplot(tab.C.1.preg, aes(x = degree.C, y = C.b)) +
+#   geom_point(data =  tab.C.1.preg, aes(x = degree.C, y = C.b)) +
+#   stat_function(fun = fit.func, args = arguments) # plot function with corresponding parameters
  
- 
- # 
+# 
 # ggplot(tab.C.9.w.o.23, aes(x=U, y=D)) +
 #   geom_point(shape=1)+ 
 #   geom_smooth(method=lm,   # Add linear regression line
