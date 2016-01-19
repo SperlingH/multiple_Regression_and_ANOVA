@@ -1315,49 +1315,39 @@ require("gridExtra")
 grid.arrange(fig.4.22.A.w.o.23, fig.4.22.B.w.o.23, ncol=2)
 # => identifikation of an outlier by the pattern
 
-
 # computing the regression as a quadric function
-tab.C.9 <- read.csv("tab.C.9.csv")
-summary(tab.C.9.quad <- lm(formula = D ~ U + I(U^2), data = tab.C.9))
-
-
-# # plotting with polynomial function fit
-# fit.func <- function(x, b0, b1, b2)(b0  + b1*x + b2*x^2)
-# arguments <- list(b0 = C.1.preg$coefficients[[1]], 
-#                   b1 = C.1.preg$coefficients[[2]], 
-#                   b2 = C.1.preg$coefficients[[3]])
-# 
-# ggplot(tab.C.1.preg, aes(x = degree.C, y = C.b)) +
-#   geom_point(data =  tab.C.1.preg, aes(x = degree.C, y = C.b)) +
-#   stat_function(fun = fit.func, args = arguments) # plot function with corresponding parameters
+tab.C.9.quad <- read.csv("tab.C.9.csv")
+summary(tab.C.9.quad.lm <- lm(formula = D ~ U + I(U^2), data = tab.C.9.quad))
+# plotting quadric function
+fit.func <- function(x, b0, b1, b2)(b0  + b1*x + b2*x^2)
+arguments <- list(b0 = tab.C.9.quad.lm$coefficients[[1]], 
+                  b1 = tab.C.9.quad.lm$coefficients[[2]], 
+                  b2 = tab.C.9.quad.lm$coefficients[[3]])
+ggplot(tab.C.9.quad, aes(x = U, y = D)) +
+   geom_point(data =  tab.C.9.quad, aes(x = U, y = D)) +
+   stat_function(fun = fit.func, args = arguments, col="blue") # plot function with corresponding parameters
  
-# 
-# ggplot(tab.C.9.w.o.23, aes(x=U, y=D)) +
-#   geom_point(shape=1)+ 
-#   geom_smooth(method=lm,   # Add linear regression line
-#               se=FALSE)    # Don't add shaded confidence region
-# 
-# #regression diagnostics of the linear model:
-# tab.C.9.w.o.23$raw.residuals <-tab.C.9.w.o.23.lm$residuals # raw residuals
-# tab.C.9.w.o.23$stud.del.res <- rstudent(tab.C.9.w.o.23.lm) # Studentized deleted residuals
-# tab.C.9.w.o.23$cooks.dist <-cooks.distance(tab.C.9.w.o.23.lm) # Cook's distance
-# tab.C.9.w.o.23$leverage <- hatvalues(tab.C.9.w.o.23.lm) # Leverage
-# #no.of.var <- 1 # here: ONE independent variable
-# #tab.C.9.w.o.23$leverage.expected <- (no.of.var + 1)/(length(tab.C.9.w.o.23$D))
-# #tab.C.9.w.o.23$leverage > 2*tab.C.9.w.o.23$leverage.expected # exceeds the leverage twice the expected value? If so, this point needs special attention.
-# # looking for outliers with a boxplot
-# boxplot(tab.C.9.w.o.23$stud.del.res)
-# boxplot(tab.C.9.w.o.23$leverage)
-# boxplot(tab.C.9.w.o.23$cooks.dist)
-# # => identifikation of an outlier
-# 
-# # plotting the raw residuals
-# fig.4.22.A.w.o.23 <- ggplot(tab.C.9.w.o.23, aes(x=D, y=raw.residuals)) +
-#   geom_point(shape=1) + 
-#   geom_hline(y=0, col="darkgrey", size=2)
-# fig.4.22.B.w.o.23 <- ggplot(tab.C.9.w.o.23, aes(x=U, y=raw.residuals)) +
-#   geom_point(shape=1) + 
-#   geom_hline(y=0, col="darkgrey", size=2)
-# require("gridExtra")
-# grid.arrange(fig.4.22.A.w.o.23, fig.4.22.B.w.o.23, ncol=2)
-# # => identifikation of an outlier by the pattern
+#regression diagnostics of the linear model:
+tab.C.9.quad$raw.residuals <-tab.C.9.quad.lm$residuals # raw residuals
+tab.C.9.quad$stud.del.res <- rstudent(tab.C.9.quad.lm) # Studentized deleted residuals
+tab.C.9.quad$cooks.dist <-cooks.distance(tab.C.9.quad.lm) # Cook's distance
+tab.C.9.quad$leverage <- hatvalues(tab.C.9.quad.lm) # Leverage
+#no.of.var <- 1 # here: ONE independent variable
+#tab.C.9.quad$leverage.expected <- (no.of.var + 1)/(length(tab.C.9.quad$D))
+#tab.C.9.quad$leverage > 2*tab.C.9.quad$leverage.expected # exceeds the leverage twice the expected value? If so, this point needs special attention.
+# looking for outliers with a boxplot
+boxplot(tab.C.9.quad$stud.del.res)
+boxplot(tab.C.9.quad$leverage)
+boxplot(tab.C.9.quad$cooks.dist)
+# => identifikation of an outlier
+
+# plotting the raw residuals
+fig.4.22.A.quad <- ggplot(tab.C.9.quad, aes(x=D, y=raw.residuals)) +
+  geom_point(shape=1) + 
+  geom_hline(y=0, col="darkgrey", size=2)
+fig.4.22.B.quad <- ggplot(tab.C.9.quad, aes(x=U, y=raw.residuals)) +
+  geom_point(shape=1) + 
+  geom_hline(y=0, col="darkgrey", size=2)
+require("gridExtra")
+grid.arrange(fig.4.22.A.quad, fig.4.22.B.quad, ncol=2)
+# => identifikation of an outlier by the pattern
