@@ -1412,13 +1412,13 @@ tab.C.10.var <- data.frame(M = tab.C.10$M,
                            ln.R = log(tab.C.10$R),
                            ln.M = log(tab.C.10$M))
 fig.4.28.A <- ggplot(tab.C.10.var , aes(x=M, y=sqrt.R)) +
-  geom_point(shape=1)
+  geom_point(shape=1) # sqrt(R) vs. M  
 fig.4.28.B <- ggplot(tab.C.10.var , aes(x=M, y=ln.R)) +
-  geom_point(shape=1)
+  geom_point(shape=1) # ln(R) vs. M   
 fig.4.28.C <- ggplot(tab.C.10.var , aes(x=M, y=inverse.R)) +
-  geom_point(shape=1)
+  geom_point(shape=1) # 1/R vs. M  
 fig.4.28.D <- ggplot(tab.C.10.var , aes(x=ln.M, y=ln.R)) +
-  geom_point(shape=1)
+  geom_point(shape=1) # ln(R) vs. ln(M)  
 require("gridExtra")
 grid.arrange(fig.4.28.A, fig.4.28.B, fig.4.28.C, fig.4.28.D, ncol=2)
 
