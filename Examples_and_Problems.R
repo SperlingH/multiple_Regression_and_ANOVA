@@ -1351,3 +1351,75 @@ fig.4.22.B.quad <- ggplot(tab.C.9.quad, aes(x=U, y=raw.residuals)) +
 require("gridExtra")
 grid.arrange(fig.4.22.A.quad, fig.4.22.B.quad, ncol=2)
 # => identifikation of an outlier by the pattern
+
+## comparison of quadric to linear fit
+#   better goodness of fit (R^2)
+#   better residual distribution
+# of the quadric fit
+## Problem: data suggests a nonlinear relationship based on one extreme point with a large gap in the data
+## => collect more data
+
+
+tab.C.10 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/chicken.dat"), header = F, sep="")
+tab.C.10 <- data.frame(R = tab.C.10$V1,
+                       M = tab.C.10$V2)
+write.csv(tab.C.10, file = "tab.C.10.csv",
+          row.names = F)
+
+summary(tab.C.10.lm <- lm(formula = R ~ M, data = tab.C.10))
+ggplot(tab.C.10, aes(x=M, y=R)) +
+  geom_point(shape=1)+ 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+# variation of R increases with increasing M
+#regression diagnostics of the linear model:
+tab.C.10$raw.residuals <-tab.C.10.lm$residuals # raw residuals
+tab.C.10$stud.del.res <- rstudent(tab.C.10.lm) # Studentized deleted residuals
+tab.C.10$cooks.dist <-cooks.distance(tab.C.10.lm) # Cook's distance
+tab.C.10$leverage <- hatvalues(tab.C.10.lm) # Leverage
+
+# Analysis of residuals
+fig.4.27.A <- ggplot(tab.C.10, aes(x=M, y=raw.residuals)) +
+  geom_point(shape=1)+ 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+# "megaphone" shape -> constant variance assumption is violated
+
+# normal probability plot
+res.ordered <- sort(tab.C.10$raw.residuals)
+rank.res <- c(1:length(tab.C.10$raw.residuals)) 
+cum.freq.res <- (rank.res - 0.5)/length(tab.C.10$raw.residuals) # cumulative frequency
+tab.C.10.norm <- data.frame(res.ordered,rank.res,cum.freq.res )
+fig.4.27.B <- ggplot(tab.C.10.norm , aes(x=res.ordered, y=cum.freq.res)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+# S-shape indicate that residuals are not normally distributed (straight line expected)
+
+require("gridExtra")
+grid.arrange(fig.4.27.A, fig.4.27.B, ncol=2)
+
+# Solution: transformation of the data to stabilize the variance
+# sqrt(R) vs. M
+# 1/R     vs. M
+# ln(R)   vs. M
+# ln(R)   vs. ln(M)
+
+tab.C.10 <- read.csv("tab.C.10.csv")
+tab.C.10.var <- data.frame(M = tab.C.10$M,
+                           sqrt.R = sqrt(tab.C.10$R),
+                           inverse.R = (1/tab.C.10$R),
+                           ln.R = log(tab.C.10$R),
+                           ln.M = log(tab.C.10$M))
+fig.4.28.A <- ggplot(tab.C.10.var , aes(x=M, y=sqrt.R)) +
+  geom_point(shape=1)
+fig.4.28.B <- ggplot(tab.C.10.var , aes(x=M, y=ln.R)) +
+  geom_point(shape=1)
+fig.4.28.C <- ggplot(tab.C.10.var , aes(x=M, y=inverse.R)) +
+  geom_point(shape=1)
+fig.4.28.D <- ggplot(tab.C.10.var , aes(x=ln.M, y=ln.R)) +
+  geom_point(shape=1)
+require("gridExtra")
+grid.arrange(fig.4.28.A, fig.4.28.B, fig.4.28.C, fig.4.28.D, ncol=2)
+
+
