@@ -1221,6 +1221,18 @@ Fig.4.18B
 #   might introduce nonlinearities
 #   transformations of the dependent variable introduce implicit weighting of different points into the process of estimating the parameters!
 
+# Common Transformations for linearization and/or Variance Stabilization
+# Transformation        Regression Equation
+# Y       vs. X^i       y = b0 + sum(b_i * X^i)     # X + poly(X,2,raw=TRUE); b0 + b1*X + b2*I(X^2)
+# ln(Y)   vs. ln(X)     y = b0 * X^B_1              # Power function
+# ln(Y)   vs. X         y = b0 * e^(b1*X)           # Exponential; stabilization; Y => 0
+# ln(Y)   vs. 1/X       y = b0 + e^(b1/X)           # Inverse exponential
+# 1/Y     vs. 1/X       y = x / (b0 + b1*X)         # Hyperbola
+# 1/Y     vs. X         y = 1 / (b0 + b1*X)         # stabilization
+# Y       vs. 1/X       y = b0 + b1/X               #
+# sqrt(Y) vs. X         y = (b0 + b1 * X)^2         # stabilization of count data
+
+
 # Quadric functions 
 # y = b0 + b1*X + b2*X^2
 function1 <- function(x){-2*x^2 + 2*x + 2}
