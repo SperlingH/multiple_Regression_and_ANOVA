@@ -950,6 +950,9 @@ C.8C.lm <- summary(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8C))
 # FIXME check for built-in-functions and/or create function
 # Problem: both deviate from the solution 2.76 for the 3. data-point
 C.8C.lm.stand.res <- C.8C.lm$residuals/C.8C.lm$sigma
+# summary(tab.C.10.lm.pw)$sigma  # getting sigma if you do:
+# summary(C.8C.lm <- lm(formula = Intelligence ~  Foot.Size, data = tab.C.8C))
+#
 # built-in function: rstandard()
 # rstandard(lm(formula = Intelligence ~  Foot.Size, data = tab.C.8C))
 # uses a different formula with the leverage included!
@@ -1058,6 +1061,7 @@ C.8D.norm.plot <- ggplot(C.8D.norm , aes(x=res.ordered, y=cum.freq.res)) +
 C.8D.norm.plot
 
 require("gridExtra")
+# fig 4-10
 grid.arrange(C.8A.norm.plot,C.8B.norm.plot,C.8C.norm.plot,C.8D.norm.plot, ncol=2)
 
 # leverage (h_ij)
@@ -1224,7 +1228,7 @@ Fig.4.18B
 # Common transformations for linearization and/or Variance Stabilization
 # Transformation        regression equation
 # Y       vs. X^i       y = b0 + sum(b_i * X^i)     # X + poly(X,2,raw=TRUE); b0 + b1*X + b2*I(X^2)
-# ln(Y)   vs. ln(X)     y = b0 * X^b1              # power function
+# ln(Y)   vs. ln(X)     y = b0 * X^b1               # power function
 # ln(Y)   vs. X         y = b0 * e^(b1*X)           # exponential; stabilization; Y => 0
 # ln(Y)   vs. 1/X       y = b0 + e^(b1/X)           # inverse exponential
 # 1/Y     vs. 1/X       y = x / (b0 + b1*X)         # hyperbola
@@ -1386,6 +1390,7 @@ ggplot(tab.C.10, aes(x=M, y=R)) +
 # variation of R increases with increasing M
 #regression diagnostics of the linear model:
 tab.C.10$raw.residuals <-tab.C.10.lm$residuals # raw residuals
+tab.C.10$stand.residuals <- tab.C.10.lm$residuals/summary(tab.C.10.lm)$sigma  # standardized residuals
 tab.C.10$stud.del.res <- rstudent(tab.C.10.lm) # Studentized deleted residuals
 tab.C.10$cooks.dist <-cooks.distance(tab.C.10.lm) # Cook's distance
 tab.C.10$leverage <- hatvalues(tab.C.10.lm) # Leverage
@@ -1398,9 +1403,9 @@ fig.4.27.A <- ggplot(tab.C.10, aes(x=M, y=raw.residuals)) +
 # "megaphone" shape -> constant variance assumption is violated
 
 # normal probability plot
-res.ordered <- sort(tab.C.10$raw.residuals)
-rank.res <- c(1:length(tab.C.10$raw.residuals)) 
-cum.freq.res <- (rank.res - 0.5)/length(tab.C.10$raw.residuals) # cumulative frequency
+res.ordered <- sort(tab.C.10$stand.residuals)
+rank.res <- c(1:length(tab.C.10$stand.residuals)) 
+cum.freq.res <- (rank.res - 0.5)/length(tab.C.10$stand.residuals) # cumulative frequency
 tab.C.10.norm <- data.frame(res.ordered,rank.res,cum.freq.res )
 fig.4.27.B <- ggplot(tab.C.10.norm , aes(x=res.ordered, y=cum.freq.res)) +
   geom_point(shape=1) + 
@@ -1435,3 +1440,32 @@ require("gridExtra")
 grid.arrange(fig.4.28.A, fig.4.28.B, fig.4.28.C, fig.4.28.D, ncol=2)
 
 
+tab.C.10.pw <- read.csv("tab.C.10.csv")
+summary(tab.C.10.lm.pw <- lm(formula = log(R) ~ log(M), data = tab.C.10.pw))
+# Results:
+# log(R) = 3.95973 + 0.99697*log(M)
+# exp(log(R)) = exp(3.95973 + 0.99697*log(M)) = exp(3.95973) + exp(0.99697*log(M))
+# R' = 52*M^0.99607
+
+# diagnostics of the  model:
+tab.C.10.pw$raw.residuals <-tab.C.10.lm.pw$residuals # raw residuals
+tab.C.10.pw$stand.residuals <- tab.C.10.lm.pw$residuals/summary(tab.C.10.lm.pw)$sigma  # standardized residuals
+tab.C.10.pw$stud.del.res <- rstudent(tab.C.10.lm.pw) # Studentized deleted residuals
+tab.C.10.pw$cooks.dist <-cooks.distance(tab.C.10.lm.pw) # Cook's distance
+tab.C.10.pw$leverage <- hatvalues(tab.C.10.lm.pw) # Leverage
+ 
+# Analysis of residuals
+fig.4.30.A <- ggplot(tab.C.10.pw, aes(x=log(M), y=raw.residuals)) +
+  geom_point(shape=1)+ 
+  geom_hline(y=0, col="darkgrey", size=2)
+
+# normal probability plot
+res.ordered <- sort(tab.C.10.pw$stand.residuals)
+rank.res <- c(1:length(tab.C.10.pw$stand.residuals)) 
+cum.freq.res <- (rank.res - 0.5)/length(tab.C.10.pw$stand.residuals) # cumulative frequency
+tab.C.10.pw.norm <- data.frame(res.ordered,rank.res,cum.freq.res )
+fig.4.27.B <- ggplot(tab.C.10.pw.norm , aes(x=res.ordered, y=cum.freq.res)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+# S-shape indicate that residuals are not normally distributed (straight line expected)
