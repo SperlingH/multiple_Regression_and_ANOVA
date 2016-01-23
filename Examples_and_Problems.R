@@ -1469,3 +1469,6 @@ fig.4.27.B <- ggplot(tab.C.10.pw.norm , aes(x=res.ordered, y=cum.freq.res)) +
   geom_smooth(method=lm,   # Add linear regression line
               se=FALSE)    # Don't add shaded confidence region
 # S-shape indicate that residuals are not normally distributed (straight line expected)
+
+
+# ToDo: make a collection of functions for quality control
