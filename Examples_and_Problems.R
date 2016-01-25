@@ -1470,5 +1470,24 @@ fig.4.27.B <- ggplot(tab.C.10.pw.norm , aes(x=res.ordered, y=cum.freq.res)) +
               se=FALSE)    # Don't add shaded confidence region
 # S-shape indicate that residuals are not normally distributed (straight line expected)
 
-
 # ToDo: make a collection of functions for quality control
+
+
+tab.C.11 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/examples/copzinc.dat"), header = F, sep="")
+tab.C.11 <- data.frame(M = tab.C.11$V1,
+                       Cu = tab.C.11$V2,
+                       Zn = tab.C.11$V3)
+write.csv(tab.C.11, file = "tab.C.11.csv",
+          row.names = F)
+
+summary(tab.C.11.lm <- lm(formula = M ~ Cu + Zn, data = tab.C.11))
+# Because of the poor fit (R^2 = 0.3)  
+# checking for outliers:
+# diagnostics of the  model:
+tab.C.11.lm.res <- tab.C.11
+tab.C.11.lm.res$raw.residuals <-tab.C.11.lm$residuals # raw residuals
+tab.C.11.lm.res$stand.residuals <- tab.C.11.lm$residuals/summary(tab.C.11.lm)$sigma  # standardized residuals; points > 2 are potential outliers [beeing more than 2 standard deviations above the mean] 
+#rstandard() gives "internally Studentized residual" ## FIXME: Check Formula -again
+tab.C.11.lm.res$stud.del.res <- rstudent(tab.C.11.lm) # Studentized deleted residuals ## FIXME: get cut-off
+tab.C.11.lm.res$cooks.dist <-cooks.distance(tab.C.11.lm) # Cook's distance; > 1 [investigate], > 4 [potentially serious outlier]
+tab.C.11.lm.res$leverage <- hatvalues(tab.C.11.lm) # Leverage; investigate if > 2*(k+1)/n [k:= no. independent variables; n:= no. of data points]
