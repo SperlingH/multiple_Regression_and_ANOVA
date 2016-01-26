@@ -1485,9 +1485,20 @@ summary(tab.C.11.lm <- lm(formula = M ~ Cu + Zn, data = tab.C.11))
 # checking for outliers:
 # diagnostics of the  model:
 tab.C.11.lm.res <- tab.C.11
-tab.C.11.lm.res$raw.residuals <-tab.C.11.lm$residuals # raw residuals
-tab.C.11.lm.res$stand.residuals <- tab.C.11.lm$residuals/summary(tab.C.11.lm)$sigma  # standardized residuals; points > 2 are potential outliers [beeing more than 2 standard deviations above the mean] 
-#rstandard() gives "internally Studentized residual" ## FIXME: Check Formula -again
+tab.C.11.lm.res$raw.residuals <- tab.C.11.lm$residuals # raw residuals
+tab.C.11.lm.res$stand.residuals <- tab.C.11.lm$residuals/summary(tab.C.11.lm)$sigma  # standardized residuals; points > 2 are potential outliers
+tab.C.11.lm.res$stud.res <- rstandard(tab.C.11.lm) # rstandard() gives "internally Studentized residual" 
 tab.C.11.lm.res$stud.del.res <- rstudent(tab.C.11.lm) # Studentized deleted residuals ## FIXME: get cut-off
-tab.C.11.lm.res$cooks.dist <-cooks.distance(tab.C.11.lm) # Cook's distance; > 1 [investigate], > 4 [potentially serious outlier]
+tab.C.11.lm.res$cooks.dist <- cooks.distance(tab.C.11.lm) # Cook's distance; > 1 [investigate], > 4 [potentially serious outlier]
 tab.C.11.lm.res$leverage <- hatvalues(tab.C.11.lm) # Leverage; investigate if > 2*(k+1)/n [k:= no. independent variables; n:= no. of data points]
+
+
+# normal probability plot: Fig 4-32
+res.ordered <- sort(tab.C.11.lm.res$stand.residuals)
+rank.res <- c(1:length(tab.C.11.lm.res$stand.residuals)) 
+cum.freq.res <- (rank.res - 0.5)/length(tab.C.11.lm.res$stand.residuals) # cumulative frequency
+tab.C.11.norm <- data.frame(res.ordered,rank.res,cum.freq.res )
+fig.4.27.B <- ggplot(tab.C.11.norm , aes(x=res.ordered, y=cum.freq.res)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
