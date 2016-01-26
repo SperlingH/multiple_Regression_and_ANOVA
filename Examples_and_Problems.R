@@ -1480,6 +1480,7 @@ tab.C.11 <- data.frame(M = tab.C.11$V1,
 write.csv(tab.C.11, file = "tab.C.11.csv",
           row.names = F)
 
+# linear model:
 summary(tab.C.11.lm <- lm(formula = M ~ Cu + Zn, data = tab.C.11))
 # Because of the poor fit (R^2 = 0.3)  
 # checking for outliers:
@@ -1487,18 +1488,87 @@ summary(tab.C.11.lm <- lm(formula = M ~ Cu + Zn, data = tab.C.11))
 tab.C.11.lm.res <- tab.C.11
 tab.C.11.lm.res$raw.residuals <- tab.C.11.lm$residuals # raw residuals
 tab.C.11.lm.res$stand.residuals <- tab.C.11.lm$residuals/summary(tab.C.11.lm)$sigma  # standardized residuals; points > 2 are potential outliers
-tab.C.11.lm.res$stud.res <- rstandard(tab.C.11.lm) # rstandard() gives "internally Studentized residual" 
-tab.C.11.lm.res$stud.del.res <- rstudent(tab.C.11.lm) # Studentized deleted residuals ## FIXME: get cut-off
-tab.C.11.lm.res$cooks.dist <- cooks.distance(tab.C.11.lm) # Cook's distance; > 1 [investigate], > 4 [potentially serious outlier]
-tab.C.11.lm.res$leverage <- hatvalues(tab.C.11.lm) # Leverage; investigate if > 2*(k+1)/n [k:= no. independent variables; n:= no. of data points]
-
+tab.C.11.lm.res$stud.res <- rstandard(tab.C.11.lm) # rstandard() gives "internally Studentized residual"; points > 2 are potential outliers
+tab.C.11.lm.res$stud.del.res <- rstudent(tab.C.11.lm) # Studentized deleted residuals; points > 2 are potential outliers
+tab.C.11.lm.res$cooks.dist <- cooks.distance(tab.C.11.lm) # Cook's distance; > 1 [investigate], > 4 [potentially serious outlier]; effect of a single data point on the regression
+tab.C.11.lm.res$leverage <- hatvalues(tab.C.11.lm) # Leverage; investigate if > 2*(k+1)/n [k:= no. independent variables; n:= no. of data points]; effect of a single data point on the regression
 
 # normal probability plot: Fig 4-32
 res.ordered <- sort(tab.C.11.lm.res$stand.residuals)
 rank.res <- c(1:length(tab.C.11.lm.res$stand.residuals)) 
 cum.freq.res <- (rank.res - 0.5)/length(tab.C.11.lm.res$stand.residuals) # cumulative frequency
 tab.C.11.norm <- data.frame(res.ordered,rank.res,cum.freq.res )
-fig.4.27.B <- ggplot(tab.C.11.norm , aes(x=res.ordered, y=cum.freq.res)) +
+fig.4.32 <- ggplot(tab.C.11.norm , aes(x=res.ordered, y=cum.freq.res)) +
   geom_point(shape=1) + 
   geom_smooth(method=lm,   # Add linear regression line
               se=FALSE)    # Don't add shaded confidence region
+# residuals are NOT normally distributed
+
+# plot of raw residuals
+# correct model?
+fig.4.33.A <- ggplot(tab.C.11.lm.res, aes(x=Cu, y=raw.residuals)) +
+  geom_point(shape=1)+ 
+  geom_hline(y=0, col="darkgrey", size=2)
+
+fig.4.33.B <- ggplot(tab.C.11.lm.res, aes(x=Zn, y=raw.residuals)) +
+  geom_point(shape=1)+ 
+  geom_hline(y=0, col="darkgrey", size=2)
+# systematic nonlinear trend for Zn -> quadric?
+
+# quadric model:
+summary(tab.C.11.lm <- lm(formula = M ~ Cu + Zn + I(Zn^2), data = tab.C.11))
+# better R^2; better residual standard error compared with linear model
+
+# compare residuals with those of the linear model
+# diagnostics of the  model:
+tab.C.11.quad.res <- tab.C.11
+tab.C.11.quad.res$raw.residuals <- tab.C.11.lm$residuals # raw residuals
+tab.C.11.quad.res$stand.residuals <- tab.C.11.lm$residuals/summary(tab.C.11.lm)$sigma  # standardized residuals; points > 2 are potential outliers
+tab.C.11.quad.res$stud.res <- rstandard(tab.C.11.lm) # rstandard() gives "internally Studentized residual"; points > 2 are potential outliers
+tab.C.11.quad.res$stud.del.res <- rstudent(tab.C.11.lm) # Studentized deleted residuals; points > 2 are potential outliers
+tab.C.11.quad.res$cooks.dist <- cooks.distance(tab.C.11.lm) # Cook's distance; > 1 [investigate], > 4 [potentially serious outlier]
+tab.C.11.quad.res$leverage <- hatvalues(tab.C.11.lm) # Leverage; investigate if > 2*(k+1)/n [k:= no. independent variables; n:= no. of data points]
+
+# normal probability plot: Fig 4-32
+res.ordered <- sort(tab.C.11.quad.res$stand.residuals)
+rank.res <- c(1:length(tab.C.11.quad.res$stand.residuals)) 
+cum.freq.res <- (rank.res - 0.5)/length(tab.C.11.quad.res$stand.residuals) # cumulative frequency
+tab.C.11.norm <- data.frame(res.ordered,rank.res,cum.freq.res )
+fig.4.35 <- ggplot(tab.C.11.norm , aes(x=res.ordered, y=cum.freq.res)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+
+# plot of raw residuals
+fig.4.36.A <- ggplot(tab.C.11.quad.res, aes(x=Cu, y=raw.residuals)) +
+  geom_point(shape=1)+ 
+  geom_hline(y=0, col="darkgrey", size=2)
+
+fig.4.36.B <- ggplot(tab.C.11.quad.res, aes(x=Zn, y=raw.residuals)) +
+  geom_point(shape=1)+ 
+  geom_hline(y=0, col="darkgrey", size=2)
+
+# formula = M ~ Cu + Zn + I(Zn^2)
+# independence of Cu to Zn and vice versa
+# Cu linear
+# Zn nonlinear
+
+# looking at the raw data:
+fig.4.38.A <- ggplot(tab.C.11, aes(x=Cu, y=M)) +
+  geom_point(shape=1)
+
+fig.4.38.B <- ggplot(tab.C.11, aes(x=Zn, y=M)) +
+  geom_point(shape=1)
+# saturation
+
+# looking at the Cu-data for each level of Zn
+ggplot(tab.C.11, aes(x = Cu, y = M, colour=factor(Zn))) + 
+  geom_point() + 
+  facet_grid(Zn ~ .)+
+  stat_smooth(method="loess") 
+# transformations for saturable functions should be suitable!
+
+# transformations for saturable functions:
+# 1/y vs. 1/x
+# ln(y) vs. ln(x)
+# ln(y) vs. 1/x
