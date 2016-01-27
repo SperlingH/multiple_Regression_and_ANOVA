@@ -1564,11 +1564,88 @@ fig.4.38.B <- ggplot(tab.C.11, aes(x=Zn, y=M)) +
 # looking at the Cu-data for each level of Zn
 ggplot(tab.C.11, aes(x = Cu, y = M, colour=factor(Zn))) + 
   geom_point() + 
-  facet_grid(Zn ~ .)+
-  stat_smooth(method="loess") 
+  facet_grid(. ~ Zn)+
+  stat_smooth(method = "loess") 
 # transformations for saturable functions should be suitable!
 
 # transformations for saturable functions:
 # 1/y vs. 1/x
 # ln(y) vs. ln(x)
 # ln(y) vs. 1/x
+
+# transformation model:
+tab.C.11 <- read.csv("tab.C.11.csv")
+summary(tab.C.11.trns <- lm(formula = log(M) ~ I(1/Cu) + I(1/Zn), data = tab.C.11))
+# better R^2; better residual standard error compared with linear model
+
+# compare residuals with those of the linear model
+# diagnostics of the  model:
+tab.C.11.trns.res <- tab.C.11
+tab.C.11.trns.res$raw.residuals <- tab.C.11.trns$residuals # raw residuals
+tab.C.11.trns.res$stand.residuals <- tab.C.11.trns$residuals/summary(tab.C.11.trns)$sigma  # standardized residuals; points > 2 are potential outliers
+tab.C.11.trns.res$stud.res <- rstandard(tab.C.11.trns) # rstandard() gives "internally Studentized residual"; points > 2 are potential outliers
+tab.C.11.trns.res$stud.del.res <- rstudent(tab.C.11.trns) # Studentized deleted residuals; points > 2 are potential outliers
+tab.C.11.trns.res$cooks.dist <- cooks.distance(tab.C.11.trns) # Cook's distance; > 1 [investigate], > 4 [potentially serious outlier]
+tab.C.11.trns.res$leverage <- hatvalues(tab.C.11.trns) # Leverage; investigate if > 2*(k+1)/n [k:= no. independent variables; n:= no. of data points]
+tab.C.11.trns.res
+
+# normal probability plot: Fig 4-41
+res.ordered <- sort(tab.C.11.trns.res$stand.residuals)
+rank.res <- c(1:length(tab.C.11.trns.res$stand.residuals)) 
+cum.freq.res <- (rank.res - 0.5)/length(tab.C.11.trns.res$stand.residuals) # cumulative frequency
+tab.C.11.norm <- data.frame(res.ordered,rank.res,cum.freq.res )
+fig.4.35 <- ggplot(tab.C.11.norm , aes(x=res.ordered, y=cum.freq.res)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+
+# plot of raw residuals
+fig.4.36.A <- ggplot(tab.C.11.trns.res, aes(x=Cu, y=raw.residuals)) +
+  geom_point(shape=1)+ 
+  geom_hline(y=0, col="darkgrey", size=2)
+
+fig.4.36.B <- ggplot(tab.C.11.trns.res, aes(x=Zn, y=raw.residuals)) +
+  geom_point(shape=1)+ 
+  geom_hline(y=0, col="darkgrey", size=2)
+
+# rewriting the regression model:
+# summary(tab.C.11.trns)$coefficients ->
+# M = 25.1 * exp(-0.32/Cu) * exp(-7.18/Zn)
+# multipicative model = interaction of Cu and Zn 
+# reciprocal of the independent variables = saturable process
+
+#################################################################################################
+# Problems Chapter 4
+
+# P-4-1
+tab.D.4 <- read.csv("tab.D.4.csv")
+# looking at all the data
+ggplot(tab.D.4, aes(x=plasma.renin, y=RV.resistance, colour=factor(group.code))) +
+  geom_point(shape=1) 
+# looking at the Data for each level of group.code
+ggplot(tab.D.4, aes(x = plasma.renin, y = RV.resistance , colour=factor(group.code))) + 
+  geom_point() + 
+  facet_grid(. ~ group.code)
+
+summary(tab.D.4.1.lm <- lm(formula = RV.resistance ~ plasma.renin, data = tab.D.4))
+# better R^2; better residual standard error compared with linear model
+
+# compare residuals with those of the linear model
+# diagnostics of the  model:
+tab.D.4.lm.res <- tab.D.4
+tab.D.4.lm.res$raw.residuals <- tab.D.4.lm$residuals # raw residuals
+tab.D.4.lm.res$stand.residuals <- tab.D.4.lm$residuals/summary(tab.D.4.lm)$sigma  # standardized residuals; points > 2 are potential outliers
+tab.D.4.lm.res$stud.res <- rstandard(tab.D.4.lm) # rstandard() gives "internally Studentized residual"; points > 2 are potential outliers
+tab.D.4.lm.res$stud.del.res <- rstudent(tab.D.4.lm) # Studentized deleted residuals; points > 2 are potential outliers
+tab.D.4.lm.res$cooks.dist <- cooks.distance(tab.D.4.lm) # Cook's distance; > 1 [investigate], > 4 [potentially serious outlier]
+tab.D.4.lm.res$leverage <- hatvalues(tab.D.4.lm) # Leverage; investigate if > 2*(k+1)/n [k:= no. independent variables; n:= no. of data points]
+tab.D.4.lm.res
+
+## FixMe: create functions for easy identification of potential outliers based on the residual analytics above
+subset(tab.D.4.lm.res, stand.residuals > 2)
+subset(tab.D.4.lm.res, stud.res > 2)
+subset(tab.D.4.lm.res, stud.del.res > 2 )
+subset(tab.D.4.lm.res, cooks.dist > 1)
+k <- 1 # FixMe: create function to extract number of variables
+print(c("expected leverage: ", (2*(k+1)/length(tab.D.4.lm.res$leverage))), quote = F)
+subset(tab.D.4.lm.res, leverage > (2*(k+1)/length(tab.D.4.lm.res$leverage)))
