@@ -1236,6 +1236,12 @@ Fig.4.18B
 # Y       vs. 1/X       y = b0 + b1/X               #
 # sqrt(Y) vs. X         y = (b0 + b1 * X)^2         # stabilization of count data
 
+# # linear model
+# summary(tab.D.4.lm <- lm(formula = RV.resistance ~ plasma.renin, data = tab.D.4))
+# # quadric model:
+# summary(tab.D.4.quad <- lm(formula =  RV.resistance ~ plasma.renin + I(plasma.renin^2), data = tab.D.4))
+
+
 
 # Quadric functions 
 # y = b0 + b1*X + b2*X^2
@@ -1619,15 +1625,8 @@ fig.4.36.B <- ggplot(tab.C.11.trns.res, aes(x=Zn, y=raw.residuals)) +
 
 # P-4-1
 tab.D.4 <- read.csv("tab.D.4.csv")
-# looking at all the data
-ggplot(tab.D.4, aes(x=plasma.renin, y=RV.resistance, colour=factor(group.code))) +
-  geom_point(shape=1) 
-# looking at the Data for each level of group.code
-ggplot(tab.D.4, aes(x = plasma.renin, y = RV.resistance , colour=factor(group.code))) + 
-  geom_point() + 
-  facet_grid(. ~ group.code)
 
-summary(tab.D.4.1.lm <- lm(formula = RV.resistance ~ plasma.renin, data = tab.D.4))
+summary(tab.D.4.lm <- lm(formula = RV.resistance ~ plasma.renin, data = tab.D.4))
 # better R^2; better residual standard error compared with linear model
 
 # compare residuals with those of the linear model
@@ -1647,5 +1646,45 @@ subset(tab.D.4.lm.res, stud.res > 2)
 subset(tab.D.4.lm.res, stud.del.res > 2 )
 subset(tab.D.4.lm.res, cooks.dist > 1)
 k <- 1 # FixMe: create function to extract number of variables
-print(c("expected leverage: ", (2*(k+1)/length(tab.D.4.lm.res$leverage))), quote = F)
-subset(tab.D.4.lm.res, leverage > (2*(k+1)/length(tab.D.4.lm.res$leverage)))
+exp.leverage <- (2*(k+1)/length(tab.D.4.lm.res$leverage))
+print(c("expected leverage: ", exp.leverage), quote = F)
+subset(tab.D.4.lm.res, leverage > exp.leverage)
+  # look at points 12, 1, 28
+
+tab.D.4.lm.res$point <- c(1:length(tab.D.4[,1]))
+# looking at all the data
+ggplot(tab.D.4.lm.res, aes(x=plasma.renin, y=RV.resistance, colour=factor(group.code))) +
+  geom_point(shape=1) +
+  geom_text(aes(label=ifelse(leverage>exp.leverage,as.character(point),'')),hjust=0, vjust=0, col="black")+ 
+  geom_text(aes(label=ifelse(stud.del.res>2,as.character(point),'')),hjust=0, vjust=0, col="red")
+#ifelse(PTS>24,as.character(Name),'')
+
+# looking at the data for each level of group.code
+ggplot(tab.D.4, aes(x = plasma.renin, y = RV.resistance , colour=factor(group.code))) + 
+  geom_point() + 
+  facet_grid(. ~ group.code)
+
+# looking at the residuals:
+# normal probability plot
+res.ordered <- sort(tab.D.4.lm.res$stand.residuals)
+rank.res <- c(1:length(tab.D.4.lm.res$stand.residuals)) 
+cum.freq.res <- (rank.res - 0.5)/length(tab.D.4.lm.res$stand.residuals) # cumulative frequency
+tab.D.4.norm <- data.frame(res.ordered,rank.res,cum.freq.res )
+ggplot(tab.D.4.norm , aes(x=res.ordered, y=cum.freq.res)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+
+# plot of raw residuals
+ggplot(tab.D.4.lm.res, aes(x=RV.resistance, y=raw.residuals)) +
+  geom_point(shape=1)+ 
+  geom_hline(y=0, col="darkgrey", size=2)
+  # => unequal distribution
+# plot of raw residuals
+ggplot(tab.D.4.lm.res, aes(x=plasma.renin, y=raw.residuals)) +
+  geom_point(shape=1)+ 
+  geom_hline(y=0, col="darkgrey", size=2)
+
+
+
+
