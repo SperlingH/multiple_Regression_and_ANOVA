@@ -1065,9 +1065,13 @@ require("gridExtra")
 grid.arrange(C.8A.norm.plot,C.8B.norm.plot,C.8C.norm.plot,C.8D.norm.plot, ncol=2)
 
 # leverage (h_ij)
-# quantifies how much the observed value of a dependent variable affects the estimated value
-# the expected (avarage) value of the leverage is (k+1)/n (k beeing the number of independent variable in the regression equation)
+# quantifies how much the observed value (of a dependent variable) affects the estimated value (of the dependent variable)
+# leverage only indicates the potential for influence!
+# the expected (avarage) value of the leverage is:
+#   (k+1)/n 
+#     (k beeing the number of independent variable in the regression equation)
 # if h_ij > 2(k+1)/n then this is considered a high leverage
+
 tab.C.8D <- read.csv("tab.C.8D.csv")
 Fig.C.8D <- ggplot(tab.C.8D, aes(x=Foot.Size, y=Intelligence)) +
   geom_point(shape=1) + 
@@ -1108,7 +1112,7 @@ C.8D.lm.stud.del.res <- rstudent(lm(formula = Intelligence ~  Foot.Size, data = 
 
 
 # Cook's distance
-# assesment of influence of data points on regression equation
+# assesment of the actual influence of a data point on the regression equation (by deleting it)
 
 tab.C.8A <- read.csv("tab.C.8A.csv")
 summary(C.8A.lm <-lm(formula = Intelligence ~  Foot.Size, data = tab.C.8A))
@@ -1657,7 +1661,7 @@ ggplot(tab.D.4.lm.res, aes(x=plasma.renin, y=RV.resistance, colour=factor(group.
   geom_point(shape=1) +
   geom_text(aes(label=ifelse(leverage>exp.leverage,as.character(point),'')),hjust=0, vjust=0, col="black")+ 
   geom_text(aes(label=ifelse(stud.del.res>2,as.character(point),'')),hjust=0, vjust=0, col="red")
-#ifelse(PTS>24,as.character(Name),'')
+
 
 # looking at the data for each level of group.code
 ggplot(tab.D.4, aes(x = plasma.renin, y = RV.resistance , colour=factor(group.code))) + 
@@ -1686,5 +1690,55 @@ ggplot(tab.D.4.lm.res, aes(x=plasma.renin, y=raw.residuals)) +
   geom_hline(y=0, col="darkgrey", size=2)
 
 
+# P-4-2
+tab.D.13 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/problems_1ed/d-13.dat"), header = F, sep="")
+tab.D.13 <- data.frame(I.gf = tab.D.13$V1,
+                       G.h = tab.D.13$V2)
+write.csv(tab.D.13, file = "tab.D.13.csv",
+          row.names = F)
 
+# plotting raw data
+ggplot(tab.D.13, aes(x=G.h, y=I.gf)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
 
+summary(tab.D.13.lm <- lm(formula = I.gf ~ G.h, data = tab.D.13))
+
+# diagnostics of the  model:
+tab.D.13.lm.res <- tab.D.13
+tab.D.13.lm.res$raw.residuals <- tab.D.13.lm$residuals
+tab.D.13.lm.res$stand.residuals <- tab.D.13.lm$residuals/summary(tab.D.13.lm)$sigma
+tab.D.13.lm.res$stud.res <- rstandard(tab.D.13.lm) 
+tab.D.13.lm.res$stud.del.res <- rstudent(tab.D.13.lm) 
+tab.D.13.lm.res$cooks.dist <- cooks.distance(tab.D.13.lm) 
+tab.D.13.lm.res$leverage <- hatvalues(tab.D.13.lm) 
+# values
+subset(tab.D.13.lm.res, stand.residuals > 2)
+subset(tab.D.13.lm.res, stud.res > 2)
+subset(tab.D.13.lm.res, stud.del.res > 2 )
+subset(tab.D.13.lm.res, cooks.dist > 1)
+k <- 1 # FixMe: create function to extract number of variables
+exp.leverage <- (2*(k+1)/length(tab.D.13.lm.res$leverage))
+print(c("expected leverage: ", exp.leverage), quote = F)
+subset(tab.D.13.lm.res, leverage > exp.leverage)
+# look at points 20, 21
+tab.D.13.lm.res
+
+# looking at the raw data with all point above the leverage threshold value
+tab.D.13.lm.res$point <- c(1:length(tab.D.13.lm.res[,1]))
+ggplot(tab.D.13.lm.res, aes(x=G.h, y=I.gf)) +
+  geom_point(shape=1) +
+  geom_text(aes(label=ifelse(leverage>exp.leverage,as.character(point),'')),hjust=0, vjust=0, col="red")
+
+# P-4-2-A
+#   low Correlation: Pearson product-moment correlation coefficient sqrt(R^2)
+#   R^2: 0.1236 -> sqrt(R^2) = 0.3515679
+#   F-Statistik: 0.1181
+#   large positiv intercept! 0 G.h should result in 0 I.gf!
+# P-4-2-B
+#   Points 20 & 21
+# P-4-2-C
+#   high leverage: the point is far away from the expected leverage value, BUT:
+#   low Cook's distance: low impact of this point alone (because there is more than one "outlier")
+#   leverage only indicates the potential for influence!
