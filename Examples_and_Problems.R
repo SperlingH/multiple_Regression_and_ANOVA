@@ -1844,3 +1844,9 @@ ggplot(tab.D.14.quad.res, aes(x=A, y=raw.residuals)) +
 ggplot(tab.D.14.quad.res, aes(x=U.ag, y=raw.residuals)) +
   geom_point(shape=1)+ 
   geom_hline(y=0, col="darkgrey", size=2)
+
+## FixMe: 
+# create function for:
+#   normal probability plot using ggplot
+#   plot of raw residuals using ggplot
+#   analysis of residuals with different models taken into account
