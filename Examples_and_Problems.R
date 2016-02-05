@@ -1742,3 +1742,105 @@ ggplot(tab.D.13.lm.res, aes(x=G.h, y=I.gf)) +
 #   high leverage: the point is far away from the expected leverage value, BUT:
 #   low Cook's distance: low impact of this point alone (because there is more than one "outlier")
 #   leverage only indicates the potential for influence!
+
+
+# P-4-3
+tab.D.14 <- read.csv(url("http://people.vetmed.wsu.edu/slinkerb/appliedregression/Data%20files/Datadisk/problems_1ed/d-14.dat"), header = F, sep="")
+tab.D.14 <- data.frame(A = tab.D.14$V1,
+                       U.ag = tab.D.14$V2)
+write.csv(tab.D.14, file = "tab.D.14.csv",
+          row.names = F)
+
+summary(tab.D.14.lm <- lm(formula = A ~ U.ag, data = tab.D.14))
+
+# diagnostics of the  model:
+tab.D.14.lm.res <- tab.D.14
+tab.D.14.lm.res$raw.residuals <- tab.D.14.lm$residuals
+tab.D.14.lm.res$stand.residuals <- tab.D.14.lm$residuals/summary(tab.D.14.lm)$sigma
+tab.D.14.lm.res$stud.res <- rstandard(tab.D.14.lm) 
+tab.D.14.lm.res$stud.del.res <- rstudent(tab.D.14.lm) 
+tab.D.14.lm.res$cooks.dist <- cooks.distance(tab.D.14.lm) 
+tab.D.14.lm.res$leverage <- hatvalues(tab.D.14.lm) 
+# values
+subset(tab.D.14.lm.res, stand.residuals > 2)
+subset(tab.D.14.lm.res, stud.res > 2)
+subset(tab.D.14.lm.res, stud.del.res > 2 )
+subset(tab.D.14.lm.res, cooks.dist > 1)
+k <- 1 # FixMe: create function to extract number of variables
+exp.leverage <- (2*(k+1)/length(tab.D.14.lm.res$leverage))
+print(c("expected leverage: ", exp.leverage), quote = F)
+subset(tab.D.14.lm.res, leverage > exp.leverage)
+# look at points 20, 21
+tab.D.14.lm.res
+
+# looking at the raw data with all point above the leverage threshold value
+tab.D.14.lm.res$point <- c(1:length(tab.D.14.lm.res[,1]))
+ggplot(tab.D.14.lm.res, aes(x=U.ag, y=A)) +
+  geom_point(shape=1) +
+  geom_text(aes(label=ifelse(leverage>exp.leverage,as.character(point),'')),hjust=0, vjust=0, col="red")+
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+
+# normal probability plot
+res.ordered <- sort(tab.D.14.lm.res$stand.residuals)
+rank.res <- c(1:length(tab.D.14.lm.res$stand.residuals)) 
+cum.freq.res <- (rank.res - 0.5)/length(tab.D.14.lm.res$stand.residuals) # cumulative frequency
+tab.D.14.norm <- data.frame(res.ordered,rank.res,cum.freq.res )
+ggplot(tab.D.14.norm , aes(x=res.ordered, y=cum.freq.res)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+
+# plot of raw residuals
+ggplot(tab.D.14.lm.res, aes(x=A, y=raw.residuals)) +
+  geom_point(shape=1)+ 
+  geom_hline(y=0, col="darkgrey", size=2)
+# => unequal distribution
+# plot of raw residuals
+ggplot(tab.D.14.lm.res, aes(x=U.ag, y=raw.residuals)) +
+  geom_point(shape=1)+ 
+  geom_hline(y=0, col="darkgrey", size=2)
+
+# quadric model
+# quadric model:
+summary(tab.D.14.quad <- lm(formula = A ~ U.ag + I(U.ag^2), data = tab.D.14))
+
+# diagnostics of the  model:
+tab.D.14.quad.res <- tab.D.14
+tab.D.14.quad.res$raw.residuals <- tab.D.14.quad$residuals
+tab.D.14.quad.res$stand.residuals <- tab.D.14.quad$residuals/summary(tab.D.14.quad)$sigma
+tab.D.14.quad.res$stud.res <- rstandard(tab.D.14.quad) 
+tab.D.14.quad.res$stud.del.res <- rstudent(tab.D.14.quad) 
+tab.D.14.quad.res$cooks.dist <- cooks.distance(tab.D.14.quad) 
+tab.D.14.quad.res$leverage <- hatvalues(tab.D.14.quad) 
+# values
+subset(tab.D.14.quad.res, stand.residuals > 2)
+subset(tab.D.14.quad.res, stud.res > 2)
+subset(tab.D.14.quad.res, stud.del.res > 2 )
+subset(tab.D.14.quad.res, cooks.dist > 1)
+k <- 1 # FixMe: create function to extract number of variables
+exp.leverage <- (2*(k+1)/length(tab.D.14.quad.res$leverage))
+print(c("expected leverage: ", exp.leverage), quote = F)
+subset(tab.D.14.quad.res, leverage > exp.leverage)
+# look at points 20, 21
+tab.D.14.quad.res
+
+# normal probability plot
+res.ordered <- sort(tab.D.14.quad.res$stand.residuals)
+rank.res <- c(1:length(tab.D.14.quad.res$stand.residuals)) 
+cum.freq.res <- (rank.res - 0.5)/length(tab.D.14.quad.res$stand.residuals) # cumulative frequency
+tab.D.14.quad.norm <- data.frame(res.ordered,rank.res,cum.freq.res )
+ggplot(tab.D.14.quad.norm , aes(x=res.ordered, y=cum.freq.res)) +
+  geom_point(shape=1) + 
+  geom_smooth(method=lm,   # Add linear regression line
+              se=FALSE)    # Don't add shaded confidence region
+
+# plot of raw residuals
+ggplot(tab.D.14.quad.res, aes(x=A, y=raw.residuals)) +
+  geom_point(shape=1)+ 
+  geom_hline(y=0, col="darkgrey", size=2)
+# => unequal distribution
+# plot of raw residuals
+ggplot(tab.D.14.quad.res, aes(x=U.ag, y=raw.residuals)) +
+  geom_point(shape=1)+ 
+  geom_hline(y=0, col="darkgrey", size=2)
