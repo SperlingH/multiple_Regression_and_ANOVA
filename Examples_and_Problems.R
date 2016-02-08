@@ -1850,3 +1850,33 @@ ggplot(tab.D.14.quad.res, aes(x=U.ag, y=raw.residuals)) +
 #   normal probability plot using ggplot
 #   plot of raw residuals using ggplot
 #   analysis of residuals with different models taken into account
+
+tab.D.14 <- read.csv("tab.D.14.csv")
+# defining y and x columns
+y <- colnames(tab.D.14)[1]
+x <- colnames(tab.D.14)[2]
+
+
+# function for residual.analytics
+#   formula.to.choose:
+#     - "lm": linear model (= standard)
+#     - else: quad model
+#   d.f:
+#     input data.frame
+residual.analytics <- function(d.f, formula.to.choose = "lm"){
+  # choose model
+  if (formula.to.choose == "lm"){
+    # linear model [y ~ x]
+    formula.1 <- as.formula(paste(y , " ~ " , x))
+  }
+  else
+    # quadric model [y ~ x + x^2]
+    formula.1 = as.formula(paste(y , " ~ " , x , " + I(" , x , "^2)"))
+  
+  # get residuals 
+  summary(lm(formula = formula.1, data = d.f))
+  }
+
+# call function
+residual.analytics(tab.D.14)
+
