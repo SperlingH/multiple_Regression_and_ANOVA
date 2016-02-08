@@ -1874,7 +1874,27 @@ residual.analytics <- function(d.f, formula.to.choose = "lm"){
     formula.1 = as.formula(paste(y , " ~ " , x , " + I(" , x , "^2)"))
   
   # get residuals 
-  summary(lm(formula = formula.1, data = d.f))
+  d.f.lm <- lm(formula = formula.1, data = d.f)
+  d.f.lm.res <- d.f
+  d.f.lm.res$raw.residuals <- d.f.lm$residuals
+  d.f.lm.res$stand.residuals <- d.f.lm$residuals/summary(d.f.lm)$sigma
+  d.f.lm.res$stud.res <- rstandard(d.f.lm) 
+  d.f.lm.res$stud.del.res <- rstudent(d.f.lm) 
+  d.f.lm.res$cooks.dist <- cooks.distance(d.f.lm) 
+  d.f.lm.res$leverage <- hatvalues(d.f.lm) 
+  # values
+  subset(d.f.lm.res, stand.residuals > 2)
+  subset(d.f.lm.res, stud.res > 2)
+  subset(d.f.lm.res, stud.del.res > 2 )
+  subset(d.f.lm.res, cooks.dist > 1)
+  k <- 1 # FixMe: create function to extract number of variables
+  exp.leverage <- (2*(k+1)/length(d.f.lm.res$leverage))
+  print(c("expected leverage: ", exp.leverage), quote = F)
+  subset(d.f.lm.res, leverage > exp.leverage)
+  # look at points 20, 21
+  d.f.lm.res
+  
+  
   }
 
 # call function
