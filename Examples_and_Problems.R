@@ -1882,16 +1882,14 @@ residual.analytics <- function(d.f, formula.to.choose = "lm"){
   d.f.lm.res$stud.del.res <- rstudent(d.f.lm) 
   d.f.lm.res$cooks.dist <- cooks.distance(d.f.lm) 
   d.f.lm.res$leverage <- hatvalues(d.f.lm) 
-  # values
-  subset(d.f.lm.res, stand.residuals > 2)
-  subset(d.f.lm.res, stud.res > 2)
-  subset(d.f.lm.res, stud.del.res > 2 )
-  subset(d.f.lm.res, cooks.dist > 1)
+  # critical values
+  d.f.lm.res$stand.res.crit <- d.f.lm.res$stand.residuals > 2
+  d.f.lm.res$stud.res.crit <- d.f.lm.res$stud.res > 2
+  d.f.lm.res$stud.del.res.crit <- d.f.lm.res$stud.del.res > 2 
+  d.f.lm.res$cooks.dist.crit <- d.f.lm.res$cooks.dist > 1
   k <- 1 # FixMe: create function to extract number of variables
-  exp.leverage <- (2*(k+1)/length(d.f.lm.res$leverage))
-  print(c("expected leverage: ", exp.leverage), quote = F)
-  subset(d.f.lm.res, leverage > exp.leverage)
-  # look at points 20, 21
+  d.f.lm.res$exp.leverage <- (2*(k+1)/length(d.f.lm.res$leverage))
+  d.f.lm.res$leverage.crit <- d.f.lm.res$leverage > d.f.lm.res$exp.leverage
   d.f.lm.res
   
   
