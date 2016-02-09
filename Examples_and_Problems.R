@@ -1899,7 +1899,8 @@ d.f.lm.res <- residual.analytics(tab.D.14, "U.ag", "A")
 d.f.lm.res
 
 # function for analytic plots:
-residual.analtic.plots <- function(d.f.lm.res, x, y){
+residual.analtic.plots <- function(d.f.lm.res){
+  require("ggplot2")
   # normal probability plot
   res.ordered <- sort(d.f.lm.res$stand.residuals)
   rank.res <- c(1:length(d.f.lm.res$stand.residuals)) 
@@ -1909,21 +1910,22 @@ residual.analtic.plots <- function(d.f.lm.res, x, y){
     geom_point(shape=1) + 
     geom_smooth(method=lm,   # Add linear regression line
                 se=FALSE)    # Don't add shaded confidence region
-  return (normal.probability.plot)
+  print(normal.probability.plot)
+
+    # plot of raw residuals
+  raw.residuals.x <- ggplot(d.f.lm.res, aes(d.f.lm.res[,2], raw.residuals)) +
+    geom_point(shape=1)+ 
+    geom_hline(y=0, col="darkgrey", size=2)+
+    labs(x=colnames(d.f.lm.res[2]), y = "raw residuals")
+  print(raw.residuals.x)
+  
+  # plot of raw residuals
+  raw.residuals.y <- ggplot(d.f.lm.res, aes(d.f.lm.res[,1], raw.residuals)) +
+    geom_point(shape=1)+ 
+    geom_hline(y=0, col="darkgrey", size=2)+
+    labs(x=colnames(d.f.lm.res[1]), y = "raw residuals")
+  print(raw.residuals.y)
 }
 # function call
-plot.1 <- residual.analtic.plots(d.f.lm.res,"U.ag","A")
-plot.1
-
-  # plot of raw residuals
-  raw.residuals.x <- ggplot(d.f.lm.res, aes(x=x, y=raw.residuals)) +
-    geom_point(shape=1)+ 
-    geom_hline(y=0, col="darkgrey", size=2)
-  # => unequal distribution
-  # plot of raw residuals
-  raw.residuals.y <- ggplot(d.f.lm.res, aes(x=U.ag, y=raw.residuals)) +
-    geom_point(shape=1)+ 
-    geom_hline(y=0, col="darkgrey", size=2)
-  
-}
+  residual.analtic.plots(d.f.lm.res)
 
