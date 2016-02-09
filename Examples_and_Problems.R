@@ -1852,18 +1852,17 @@ ggplot(tab.D.14.quad.res, aes(x=U.ag, y=raw.residuals)) +
 #   analysis of residuals with different models taken into account
 
 tab.D.14 <- read.csv("tab.D.14.csv")
-# defining y and x columns
-y <- colnames(tab.D.14)[1]
-x <- colnames(tab.D.14)[2]
-
 
 # function for residual.analytics
+#   d.f:
+#     input data.frame
+# defining y and x columns
+#   y <- colnames(tab.D.14)[1]
+#   x <- colnames(tab.D.14)[2]
 #   formula.to.choose:
 #     - "lm": linear model (= standard)
 #     - else: quad model
-#   d.f:
-#     input data.frame
-residual.analytics <- function(d.f, formula.to.choose = "lm"){
+residual.analytics <- function(d.f, x, y, formula.to.choose = "lm"){
   # choose model
   if (formula.to.choose == "lm"){
     # linear model [y ~ x]
@@ -1891,10 +1890,40 @@ residual.analytics <- function(d.f, formula.to.choose = "lm"){
   d.f.lm.res$exp.leverage <- (2*(k+1)/length(d.f.lm.res$leverage))
   d.f.lm.res$leverage.crit <- d.f.lm.res$leverage > d.f.lm.res$exp.leverage
   d.f.lm.res
-  
-  
   }
 
 # call function
-residual.analytics(tab.D.14)
+d.f.lm.res <- residual.analytics(tab.D.14, colnames(tab.D.14)[2], colnames(tab.D.14)[1])
+d.f.lm.res
+d.f.lm.res <- residual.analytics(tab.D.14, "U.ag", "A")
+d.f.lm.res
+
+# function for analytic plots:
+residual.analtic.plots <- function(d.f.lm.res, x, y){
+  # normal probability plot
+  res.ordered <- sort(d.f.lm.res$stand.residuals)
+  rank.res <- c(1:length(d.f.lm.res$stand.residuals)) 
+  cum.freq.res <- (rank.res - 0.5)/length(d.f.lm.res$stand.residuals) # cumulative frequency
+  tab.norm <- data.frame(res.ordered,rank.res,cum.freq.res )
+  normal.probability.plot <- ggplot(tab.norm , aes(x=res.ordered, y=cum.freq.res)) +
+    geom_point(shape=1) + 
+    geom_smooth(method=lm,   # Add linear regression line
+                se=FALSE)    # Don't add shaded confidence region
+  return (normal.probability.plot)
+}
+# function call
+plot.1 <- residual.analtic.plots(d.f.lm.res,"U.ag","A")
+plot.1
+
+  # plot of raw residuals
+  raw.residuals.x <- ggplot(d.f.lm.res, aes(x=x, y=raw.residuals)) +
+    geom_point(shape=1)+ 
+    geom_hline(y=0, col="darkgrey", size=2)
+  # => unequal distribution
+  # plot of raw residuals
+  raw.residuals.y <- ggplot(d.f.lm.res, aes(x=U.ag, y=raw.residuals)) +
+    geom_point(shape=1)+ 
+    geom_hline(y=0, col="darkgrey", size=2)
+  
+}
 
