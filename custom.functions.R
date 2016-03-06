@@ -1,27 +1,30 @@
-# Functions
+# Custom functions for multivariate statistics
 
 # Creation date: 
-#   2015-12-04
+#   2016-02-10
 # Created by: 
 #   HS
 # Objective:
-#   function for residual.analytics
+#   Function for residual analytics. Getting analytics like Cook's distance and leverage including cut-off values.
 # Usage: 
-#   
+#   residual.analytics(d.f, x, y, formula.to.choose=lm)
 # Input: 
-# 
-# Output:
-#   
-
-
-#   d.f:
-#     input data.frame
+#   d.f: input data.frame
 # defining y and x columns
 #   y <- colnames(tab.D.14)[1]
 #   x <- colnames(tab.D.14)[2]
 #   formula.to.choose:
 #     - "lm": linear model (= standard)
 #     - else: quad model
+# Output:
+#   data.frame with residual analytics
+
+# loading custom functions for the analysis of residuals:
+# source("path/to/custom.functions.R") # OR
+# library(devtools) # needed for https source from github
+# source_url('https://raw.githubusercontent.com/SperlingH/multiple_Regression_and_ANOVA/master/custom.functions.R')
+
+
 residual.analytics <- function(d.f, x, y, formula.to.choose = "lm"){
   # choose model
   if (formula.to.choose == "lm"){
@@ -39,15 +42,14 @@ residual.analytics <- function(d.f, x, y, formula.to.choose = "lm"){
   d.f.lm.res <- d.f
   d.f.lm.res$raw.residuals <- d.f.lm$residuals
   d.f.lm.res$stand.residuals <- d.f.lm$residuals/summary(d.f.lm)$sigma
-  d.f.lm.res$stud.res <- rstandard(d.f.lm) 
-  d.f.lm.res$stud.del.res <- rstudent(d.f.lm) 
-  d.f.lm.res$cooks.dist <- cooks.distance(d.f.lm) 
-  d.f.lm.res$leverage <- hatvalues(d.f.lm) 
-  # critical values
   d.f.lm.res$stand.res.crit <- d.f.lm.res$stand.residuals > 2
+  d.f.lm.res$stud.res <- rstandard(d.f.lm) 
   d.f.lm.res$stud.res.crit <- d.f.lm.res$stud.res > 2
-  d.f.lm.res$stud.del.res.crit <- d.f.lm.res$stud.del.res > 2 
+  d.f.lm.res$stud.del.res <- rstudent(d.f.lm) 
+  d.f.lm.res$stud.del.res.crit <- d.f.lm.res$stud.del.res > 2
+  d.f.lm.res$cooks.dist <- cooks.distance(d.f.lm)
   d.f.lm.res$cooks.dist.crit <- d.f.lm.res$cooks.dist > 1
+  d.f.lm.res$leverage <- hatvalues(d.f.lm) 
   k <- 1 # FixMe: create function to extract number of variables
   d.f.lm.res$exp.leverage <- (2*(k+1)/length(d.f.lm.res$leverage))
   d.f.lm.res$leverage.crit <- d.f.lm.res$leverage > d.f.lm.res$exp.leverage
@@ -56,13 +58,14 @@ residual.analytics <- function(d.f, x, y, formula.to.choose = "lm"){
 
 # call function
 tab.D.14 <- read.csv("tab.D.14.csv")
-d.f.lm.res <- residual.analytics(tab.D.14, colnames(tab.D.14)[2], colnames(tab.D.14)[1])
-d.f.lm.res
+#d.f.lm.res <- residual.analytics(tab.D.14, colnames(tab.D.14)[2], colnames(tab.D.14)[1])
 d.f.lm.res <- residual.analytics(tab.D.14, "U.ag", "A")
 d.f.lm.res
 
+#########################################################################################################
+
 # Creation date: 
-#   2015-12-04
+#   2016-02-10
 # Created by: 
 #   HS
 # Objective: 
@@ -75,7 +78,7 @@ d.f.lm.res
 #   
 
 # function for analytic plots:
-residual.analtic.plots <- function(d.f.lm.res){
+residual.analytic.plots <- function(d.f.lm.res){
   require("ggplot2")
   # normal probability plot
   res.ordered <- sort(d.f.lm.res$stand.residuals)
@@ -107,6 +110,7 @@ residual.analtic.plots <- function(d.f.lm.res){
   ## FIXME: ADD markings for points with high leverage/ cook's distance
   print(raw.residuals.y)
 }
+
 # function call
 tab.D.14 <- read.csv("tab.D.14.csv")
-residual.analtic.plots(d.f.lm.res)
+residual.analytic.plots(d.f.lm.res)

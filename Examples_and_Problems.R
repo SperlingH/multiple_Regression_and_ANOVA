@@ -1845,6 +1845,10 @@ ggplot(tab.D.14.quad.res, aes(x=U.ag, y=raw.residuals)) +
   geom_point(shape=1)+ 
   geom_hline(y=0, col="darkgrey", size=2)
 
-
+##############
+# loading custom functions for the analysis of residuals
+# source("path/to/custom.functions.R") # OR
+library(devtools) # needed for https source from github
+source_url('https://raw.githubusercontent.com/SperlingH/multiple_Regression_and_ANOVA/master/custom.functions.R')
 
 
